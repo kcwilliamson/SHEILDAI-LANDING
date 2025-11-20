@@ -5,11 +5,13 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useShapesAnimation } from '../hooks/useShapesAnimation';
 import { useAntAnimation } from '../hooks/useAntAnimation';
+import { useParallaxBars } from '../hooks/useParallaxBars';
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { canvasRef, transformToColorful, transformToGrey, continueShapesInBackground, exitShapes } = useShapesAnimation();
+  const { canvasRef, transformToColorful, transformToGrey, turnGreyWithConnections, continueShapesInBackground, exitShapes } = useShapesAnimation();
   const { canvasRef: antCanvasRef, startSingleAnt, addMoreAnts, addAntsFromOffScreen, resetToSingleAnt } = useAntAnimation();
+  const { canvasRef: parallaxCanvasRef } = useParallaxBars();
   
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -17,48 +19,38 @@ export default function Home() {
     // Continuous looping animation - 5 seconds grey, 5 seconds colorful
     const createShapesLoop = () => {
       const loop = () => {
-        // Start with grey state for 5 seconds
-        transformToGrey();
+        // Use timeline for perfect synchronization of shapes and text
+        const greyTimeline = gsap.timeline();
         
-        // Smooth fade transition to grey text
-        gsap.to("#main-text", {
-          duration: 0.5,
-          opacity: 0,
-          ease: "power2.out",
-          onComplete: () => {
+        greyTimeline.add(() => {
+          transformToGrey();
+          
+          // Wait for shapes to fully transform before changing text (1.5s transformation duration)
+          gsap.delayedCall(1.5, () => {
             gsap.set("#main-text", {
-              innerHTML: "It's not<br/>Artificial<br/>Intelligence"
+              innerHTML: "It's<br/>not Artificial<br/>Intelligence"
             });
-            gsap.to("#main-text", {
-              duration: 0.5,
-              opacity: 1,
-              ease: "power2.out"
-            });
-          }
+          });
         });
         
-        // After 5 seconds, switch to colorful for 5 seconds
+        // After 5 seconds, switch to colorful
         gsap.delayedCall(5, () => {
-          transformToColorful();
+          const colorfulTimeline = gsap.timeline();
           
-          // Smooth fade transition to colorful text
-          gsap.to("#main-text", {
-            duration: 0.5,
-            opacity: 0,
-            ease: "power2.out",
-            onComplete: () => {
-              gsap.set("#main-text", {
-                innerHTML: "It's<br/>Collective<br/>Intelligence"
-              });
-              gsap.to("#main-text", {
-                duration: 0.5,
-                opacity: 1,
-                ease: "power2.out"
-              });
-            }
+          colorfulTimeline.add(() => {
+            // Change text at exact same moment as shape transformation
+            gsap.set("#main-text", {
+              innerHTML: "It's<br/>Collective<br/>Intelligence"
+            });
+            transformToColorful();
           });
           
-          // After another 5 seconds, repeat the loop
+          // After 3.5 seconds, turn colorful shapes grey with connections at current positions
+          gsap.delayedCall(3.5, () => {
+            turnGreyWithConnections();
+          });
+          
+          // After another 5 seconds total, repeat the loop
           gsap.delayedCall(5, loop);
         });
       };
@@ -172,13 +164,17 @@ export default function Home() {
 
       {/* Section 2: Your content fuels AI */}
       <section className="content-section relative min-h-screen pt-24">
+        <canvas 
+          ref={parallaxCanvasRef}
+          className="absolute inset-0 w-full h-full z-0"
+        />
         <div className="relative z-10 h-full flex items-center justify-center px-6">
           <div className="grid grid-cols-12 w-full">
             <div className="col-start-4 col-span-6 flex flex-col items-center justify-center">
               <h2 className="font-bold text-white mb-12 text-center leading-tight p-6" style={{fontSize: '60px'}}>
                 Your content fuels AI
               </h2>
-              <div className="space-y-6 text-lg md:text-xl text-gray-300 leading-relaxed text-center max-w-[65ch] mx-auto p-6">
+              <div className="space-y-6 text-lg md:text-xl text-gray-300 leading-relaxed text-center max-w-[65ch] mx-auto p-6 bg-black/30 backdrop-blur-sm rounded-lg">
                 <p>
                   Imagine all the photos, articles, videos, and code you and 
                   millions of others have ever created. Your unique, high-quality 

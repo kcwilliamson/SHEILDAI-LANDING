@@ -221,6 +221,21 @@ export const useShapesAnimation = () => {
     });
   };
 
+  const turnGreyWithConnections = () => {
+    isColorfulRef.current = false;
+    
+    shapesRef.current.forEach((shape, index) => {
+      // Turn shapes grey at their current positions and stop movement
+      gsap.to(shape, {
+        duration: 1.5,
+        color: colors.grey,
+        vx: 0, // Stop movement
+        vy: 0,
+        ease: "power2.out"
+      });
+    });
+  };
+
   const transformToGrey = () => {
     isColorfulRef.current = false;
     
@@ -311,6 +326,7 @@ export const useShapesAnimation = () => {
     canvasRef,
     transformToColorful,
     transformToGrey,
+    turnGreyWithConnections,
     continueShapesInBackground,
     exitShapes
   };
