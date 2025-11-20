@@ -102,12 +102,12 @@ export default function Home() {
       </section>
 
       {/* Section 2: Your content fuels AI */}
-      <section className="content-section relative min-h-screen flex items-start justify-start px-6 pt-24">
-        <div className="max-w-2xl ml-8 lg:ml-16 relative z-10">
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 text-left">
+      <section className="content-section relative min-h-screen flex items-start justify-center px-6 pt-24">
+        <div className="max-w-[75ch] relative z-10 p-5">
+          <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 text-center">
             Your content fuels AI
           </h2>
-          <div className="space-y-6 text-base md:text-lg text-gray-300 leading-relaxed text-left">
+          <div className="space-y-6 text-base md:text-lg text-gray-300 leading-relaxed text-center">
             <p>
               Imagine all the photos, articles, videos, and code you and 
               millions of others have ever created. Your unique, high-quality 

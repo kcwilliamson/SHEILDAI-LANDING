@@ -13,6 +13,11 @@ interface Shape {
   color: string;
   originalColor: string;
   id: number;
+  centerX?: number;
+  centerY?: number;
+  floatRadius?: number;
+  floatSpeed?: number;
+  floatAngle?: number;
 }
 
 export const useShapesAnimation = () => {
@@ -40,29 +45,48 @@ export const useShapesAnimation = () => {
       { x: 0.7, y: 0.75 },  // bottom-right-center
       { x: 0.88, y: 0.6 },  // bottom-right
       { x: 0.6, y: 0.45 },  // right-middle
+      { x: 0.08, y: 0.45 }, // left-middle
+      { x: 0.25, y: 0.35 }, // left-center
+      { x: 0.75, y: 0.25 }, // top-right-center
+      { x: 0.4, y: 0.6 },   // center-bottom
+      { x: 0.92, y: 0.4 },  // far-right
+      { x: 0.05, y: 0.8 },  // far-bottom-left
     ];
 
     const shapeTypes: Shape['type'][] = ['circle', 'triangle', 'roundedRect'];
     const shapes = [
       'triangle', 'triangle', 'roundedRect', 'roundedRect', 
-      'roundedRect', 'circle', 'circle', 'roundedRect'
+      'roundedRect', 'circle', 'circle', 'roundedRect',
+      'circle', 'triangle', 'roundedRect', 'triangle',
+      'circle', 'roundedRect'
     ];
     
     const position = networkPositions[id] || networkPositions[0];
     const type = shapes[id] as Shape['type'] || 'circle';
     const colorfulColor = colors.colorful[id % colors.colorful.length];
 
+    // Add subtle floating movement for grey network state
+    const floatRadius = 15 + (id % 4) * 5; // Varied radius for floating (15-30px)
+    const angle = (id / 14) * Math.PI * 2; // Distribute angles evenly for 14 shapes
+    const speed = 0.015 + (id % 4) * 0.008; // Varied speeds
+
     return {
       x: position.x * canvas.width,
       y: position.y * canvas.height,
-      vx: 0, // Start stationary
-      vy: 0,
-      size: id < 2 ? 80 : (id < 4 ? 100 : 70), // Varied sizes like the image
+      vx: Math.cos(angle) * speed, // Gentle floating movement
+      vy: Math.sin(angle) * speed,
+      size: id < 2 ? 80 : (id < 6 ? 90 : (id < 10 ? 75 : 65)), // More varied sizes
       type,
       color: colors.grey,
       originalColor: colorfulColor,
-      id
-    };
+      id,
+      // Add properties for floating animation
+      centerX: position.x * canvas.width,
+      centerY: position.y * canvas.height,
+      floatRadius,
+      floatSpeed: speed,
+      floatAngle: angle
+    } as Shape & { centerX: number; centerY: number; floatRadius: number; floatSpeed: number; floatAngle: number };
   };
 
   const drawShape = (ctx: CanvasRenderingContext2D, shape: Shape) => {
@@ -104,11 +128,18 @@ export const useShapesAnimation = () => {
     ctx.lineWidth = 2;
     ctx.globalAlpha = 0.6;
 
-    // Predefined network connections to match the reference image
+    // Predefined network connections for enhanced network
     const connections = [
-      [0, 1], [1, 2], [2, 7], [7, 6], [6, 5], [5, 4], [4, 3], [3, 0], // outer ring
-      [0, 4], [1, 7], [2, 5], [3, 6], // cross connections
-      [1, 4], [2, 6] // additional strategic connections
+      // Original outer ring
+      [0, 1], [1, 2], [2, 7], [7, 6], [6, 5], [5, 4], [4, 3], [3, 0],
+      // Original cross connections
+      [0, 4], [1, 7], [2, 5], [3, 6], [1, 4], [2, 6],
+      // New connections for additional shapes
+      [8, 9], [9, 0], [9, 3], [8, 4], // left side connections
+      [10, 1], [10, 2], [10, 7], [11, 7], [11, 5], // top and center connections
+      [12, 2], [12, 7], [12, 6], // right side connections
+      [13, 3], [13, 4], [13, 5], // bottom connections
+      [8, 11], [9, 11], [11, 6] // interconnections
     ];
 
     connections.forEach(([i, j]) => {
@@ -135,15 +166,22 @@ export const useShapesAnimation = () => {
 
     // Update and draw shapes
     shapesRef.current.forEach(shape => {
-      // Update position
-      shape.x += shape.vx;
-      shape.y += shape.vy;
+      if (!isColorfulRef.current && shape.centerX && shape.centerY && shape.floatRadius && shape.floatSpeed) {
+        // Floating animation for grey network state
+        shape.floatAngle! += shape.floatSpeed;
+        shape.x = shape.centerX + Math.cos(shape.floatAngle!) * shape.floatRadius;
+        shape.y = shape.centerY + Math.sin(shape.floatAngle!) * shape.floatRadius;
+      } else {
+        // Normal movement for colorful state
+        shape.x += shape.vx;
+        shape.y += shape.vy;
 
-      // Wrap around edges
-      if (shape.x > canvas.width + shape.size) shape.x = -shape.size;
-      if (shape.x < -shape.size) shape.x = canvas.width + shape.size;
-      if (shape.y > canvas.height + shape.size) shape.y = -shape.size;
-      if (shape.y < -shape.size) shape.y = canvas.height + shape.size;
+        // Wrap around edges for colorful state
+        if (shape.x > canvas.width + shape.size) shape.x = -shape.size;
+        if (shape.x < -shape.size) shape.x = canvas.width + shape.size;
+        if (shape.y > canvas.height + shape.size) shape.y = -shape.size;
+        if (shape.y < -shape.size) shape.y = canvas.height + shape.size;
+      }
     });
 
     // Draw connections first (behind shapes)
@@ -162,7 +200,7 @@ export const useShapesAnimation = () => {
     if (!canvas) return;
 
     // Create initial shapes
-    shapesRef.current = Array.from({ length: 8 }, (_, i) => createShape(i));
+    shapesRef.current = Array.from({ length: 14 }, (_, i) => createShape(i));
   };
 
   const transformToColorful = () => {
@@ -192,18 +230,27 @@ export const useShapesAnimation = () => {
     const networkPositions = [
       { x: 0.15, y: 0.25 }, { x: 0.5, y: 0.15 }, { x: 0.85, y: 0.3 },
       { x: 0.12, y: 0.65 }, { x: 0.3, y: 0.8 }, { x: 0.7, y: 0.75 },
-      { x: 0.88, y: 0.6 }, { x: 0.6, y: 0.45 }
+      { x: 0.88, y: 0.6 }, { x: 0.6, y: 0.45 }, { x: 0.08, y: 0.45 },
+      { x: 0.25, y: 0.35 }, { x: 0.75, y: 0.25 }, { x: 0.4, y: 0.6 },
+      { x: 0.92, y: 0.4 }, { x: 0.05, y: 0.8 }
     ];
     
     shapesRef.current.forEach((shape, index) => {
       const position = networkPositions[index] || networkPositions[0];
+      
+      // Reset floating properties
+      shape.centerX = position.x * canvas.width;
+      shape.centerY = position.y * canvas.height;
+      shape.floatRadius = 15 + (index % 4) * 5;
+      shape.floatSpeed = 0.015 + (index % 4) * 0.008;
+      shape.floatAngle = (index / 14) * Math.PI * 2;
       
       gsap.to(shape, {
         duration: 1.5,
         color: colors.grey,
         x: position.x * canvas.width,
         y: position.y * canvas.height,
-        vx: 0, // Stop movement
+        vx: 0, // Stop linear movement
         vy: 0,
         ease: "power2.out"
       });
