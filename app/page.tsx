@@ -16,67 +16,54 @@ export default function Home() {
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     
-    // Continuous looping animation - 5 seconds grey, 5 seconds colorful
-    const createShapesLoop = () => {
-      const loop = () => {
-        // Master timeline for smooth transitions
-        const masterTimeline = gsap.timeline();
-        
-        // Phase 1: Transform to grey network (0s)
-        masterTimeline.add(() => {
-          transformToGrey();
-        }, 0);
-        
-        // Phase 2: Smooth text transition to grey text (1.5s - when shapes are settled)
-        masterTimeline.to("#main-text", {
-          duration: 0.3,
-          opacity: 0,
-          ease: "power2.out"
-        }, 1.5)
-        .call(() => {
-          gsap.set("#main-text", {
-            innerHTML: "It's<br/>not Artificial<br/>Intelligence"
-          });
-        })
-        .to("#main-text", {
-          duration: 0.3,
-          opacity: 1,
-          ease: "power2.out"
-        });
-        
-        // Phase 3: Transform to colorful (5s)
-        masterTimeline.to("#main-text", {
-          duration: 0.3,
-          opacity: 0,
-          ease: "power2.out"
-        }, 5)
-        .add(() => {
-          transformToColorful();
-          gsap.set("#main-text", {
-            innerHTML: "It's<br/>Collective<br/>Intelligence"
-          });
-        })
-        .to("#main-text", {
-          duration: 0.3,
-          opacity: 1,
-          ease: "power2.out"
-        });
-        
-        // Phase 4: Turn shapes grey at current positions (8.5s)
-        masterTimeline.add(() => {
-          turnGreyWithConnections();
-        }, 8.5);
-        
-        // Phase 5: Loop (10s)
-        masterTimeline.call(loop, [], 10);
-      };
+    // Simple one-time animation: 5 seconds grey, then colorful indefinitely
+    const createShapesAnimation = () => {
+      const masterTimeline = gsap.timeline();
       
-      // Start the loop
-      loop();
+      // Phase 1: Start with grey network (0s)
+      masterTimeline.add(() => {
+        transformToGrey();
+      }, 0);
+      
+      // Phase 2: Set initial grey text (1.5s - when shapes are settled)
+      masterTimeline.to("#main-text", {
+        duration: 0.3,
+        opacity: 0,
+        ease: "power2.out"
+      }, 1.5)
+      .call(() => {
+        gsap.set("#main-text", {
+          innerHTML: "It's<br/>not Artificial<br/>Intelligence"
+        });
+      })
+      .to("#main-text", {
+        duration: 0.3,
+        opacity: 1,
+        ease: "power2.out"
+      });
+      
+      // Phase 3: Transform to colorful after 5 seconds (5s)
+      masterTimeline.to("#main-text", {
+        duration: 0.3,
+        opacity: 0,
+        ease: "power2.out"
+      }, 5)
+      .add(() => {
+        transformToColorful();
+        gsap.set("#main-text", {
+          innerHTML: "It's<br/>Collective<br/>Intelligence"
+        });
+      })
+      .to("#main-text", {
+        duration: 0.3,
+        opacity: 1,
+        ease: "power2.out"
+      });
+      // Stay colorful indefinitely - no more phases
     };
 
-    // Start the loop when component mounts
-    createShapesLoop();
+    // Start the animation when component mounts
+    createShapesAnimation();
 
     // Continue shapes in content section with reduced opacity
     ScrollTrigger.create({
@@ -136,21 +123,37 @@ export default function Home() {
 
   return (
     <div ref={containerRef} className="min-h-screen">
-      {/* Cloudflare Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
-        <nav className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
+      {/* White Sticky Menu */}
+      <header className="sticky top-0 left-0 right-0 z-50 bg-white shadow-sm border-b border-gray-100">
+        <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          {/* Cloudflare Logo - Far Left */}
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1">
-              <div className="w-6 h-6 bg-orange-500 rounded-sm" />
-              <div className="w-6 h-6 bg-orange-400 rounded-sm -ml-3" />
+              <div className="w-7 h-7 bg-orange-500 rounded-sm" />
+              <div className="w-7 h-7 bg-orange-400 rounded-sm -ml-3" />
             </div>
             <span className="text-black font-bold text-xl ml-2">CLOUDFLARE</span>
           </div>
-          <div className="hidden md:flex items-center gap-8 text-gray-700 font-medium">
-            <a href="#" className="hover:text-orange-500 transition-colors">How It AI works</a>
-            <a href="#" className="hover:text-orange-500 transition-colors">Protect your content</a>
-            <a href="#" className="hover:text-orange-500 transition-colors">Start with Cloudflare</a>
+          
+          {/* Navigation Menu - Far Right */}
+          <div className="hidden md:flex items-center gap-8">
+            <a href="#" className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200">
+              What is AI?
+            </a>
+            <a href="#" className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200">
+              How to protect your content
+            </a>
+            <a href="#" className="bg-orange-500 text-white px-6 py-2 rounded-md hover:bg-orange-600 font-medium transition-colors duration-200">
+              Get Started
+            </a>
           </div>
+          
+          {/* Mobile Menu Button */}
+          <button className="md:hidden p-2 text-gray-700 hover:text-orange-500">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
         </nav>
       </header>
 
