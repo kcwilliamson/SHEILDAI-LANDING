@@ -30,16 +30,34 @@ export const useShapesAnimation = () => {
     const canvas = canvasRef.current;
     if (!canvas) throw new Error('Canvas not found');
 
+    // Predefined network positions around the center text area
+    const networkPositions = [
+      { x: 0.15, y: 0.25 }, // top-left
+      { x: 0.5, y: 0.15 },  // top-center  
+      { x: 0.85, y: 0.3 },  // top-right
+      { x: 0.12, y: 0.65 }, // bottom-left
+      { x: 0.3, y: 0.8 },   // bottom-left-center
+      { x: 0.7, y: 0.75 },  // bottom-right-center
+      { x: 0.88, y: 0.6 },  // bottom-right
+      { x: 0.6, y: 0.45 },  // right-middle
+    ];
+
     const shapeTypes: Shape['type'][] = ['circle', 'triangle', 'roundedRect'];
-    const type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
-    const colorfulColor = colors.colorful[Math.floor(Math.random() * colors.colorful.length)];
+    const shapes = [
+      'triangle', 'triangle', 'roundedRect', 'roundedRect', 
+      'roundedRect', 'circle', 'circle', 'roundedRect'
+    ];
+    
+    const position = networkPositions[id] || networkPositions[0];
+    const type = shapes[id] as Shape['type'] || 'circle';
+    const colorfulColor = colors.colorful[id % colors.colorful.length];
 
     return {
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: (Math.random() - 0.5) * 0.3,
-      size: 40 + Math.random() * 60,
+      x: position.x * canvas.width,
+      y: position.y * canvas.height,
+      vx: 0, // Start stationary
+      vy: 0,
+      size: id < 2 ? 80 : (id < 4 ? 100 : 70), // Varied sizes like the image
       type,
       color: colors.grey,
       originalColor: colorfulColor,
@@ -83,23 +101,25 @@ export const useShapesAnimation = () => {
     if (isColorfulRef.current) return; // Don't draw connections when colorful
 
     ctx.strokeStyle = '#666666';
-    ctx.lineWidth = 1;
-    ctx.globalAlpha = 0.3;
+    ctx.lineWidth = 2;
+    ctx.globalAlpha = 0.6;
 
-    for (let i = 0; i < shapes.length; i++) {
-      for (let j = i + 1; j < shapes.length; j++) {
-        const dx = shapes[i].x - shapes[j].x;
-        const dy = shapes[i].y - shapes[j].y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
+    // Predefined network connections to match the reference image
+    const connections = [
+      [0, 1], [1, 2], [2, 7], [7, 6], [6, 5], [5, 4], [4, 3], [3, 0], // outer ring
+      [0, 4], [1, 7], [2, 5], [3, 6], // cross connections
+      [1, 4], [2, 6] // additional strategic connections
+    ];
 
-        if (distance < 200) {
-          ctx.beginPath();
-          ctx.moveTo(shapes[i].x, shapes[i].y);
-          ctx.lineTo(shapes[j].x, shapes[j].y);
-          ctx.stroke();
-        }
+    connections.forEach(([i, j]) => {
+      if (shapes[i] && shapes[j]) {
+        ctx.beginPath();
+        ctx.moveTo(shapes[i].x, shapes[i].y);
+        ctx.lineTo(shapes[j].x, shapes[j].y);
+        ctx.stroke();
       }
-    }
+    });
+    
     ctx.globalAlpha = 1;
   };
 
@@ -142,18 +162,22 @@ export const useShapesAnimation = () => {
     if (!canvas) return;
 
     // Create initial shapes
-    shapesRef.current = Array.from({ length: 6 }, (_, i) => createShape(i));
+    shapesRef.current = Array.from({ length: 8 }, (_, i) => createShape(i));
   };
 
   const transformToColorful = () => {
     isColorfulRef.current = true;
     
-    shapesRef.current.forEach(shape => {
+    shapesRef.current.forEach((shape, index) => {
+      // Generate random movement direction for separation
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 0.5 + Math.random() * 1.0;
+      
       gsap.to(shape, {
         duration: 1.5,
         color: shape.originalColor,
-        vx: shape.vx * 2, // Increase movement speed
-        vy: shape.vy * 2,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
         ease: "power2.out"
       });
     });
@@ -162,12 +186,40 @@ export const useShapesAnimation = () => {
   const transformToGrey = () => {
     isColorfulRef.current = false;
     
-    shapesRef.current.forEach(shape => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const networkPositions = [
+      { x: 0.15, y: 0.25 }, { x: 0.5, y: 0.15 }, { x: 0.85, y: 0.3 },
+      { x: 0.12, y: 0.65 }, { x: 0.3, y: 0.8 }, { x: 0.7, y: 0.75 },
+      { x: 0.88, y: 0.6 }, { x: 0.6, y: 0.45 }
+    ];
+    
+    shapesRef.current.forEach((shape, index) => {
+      const position = networkPositions[index] || networkPositions[0];
+      
       gsap.to(shape, {
         duration: 1.5,
         color: colors.grey,
-        vx: shape.vx * 0.5, // Decrease movement speed
-        vy: shape.vy * 0.5,
+        x: position.x * canvas.width,
+        y: position.y * canvas.height,
+        vx: 0, // Stop movement
+        vy: 0,
+        ease: "power2.out"
+      });
+    });
+  };
+
+  const continueShapesInBackground = () => {
+    // Keep shapes moving but more subtly in the background
+    shapesRef.current.forEach((shape, index) => {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 0.2 + Math.random() * 0.3; // Slower movement
+      
+      gsap.to(shape, {
+        duration: 2,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
         ease: "power2.out"
       });
     });
@@ -212,6 +264,7 @@ export const useShapesAnimation = () => {
     canvasRef,
     transformToColorful,
     transformToGrey,
+    continueShapesInBackground,
     exitShapes
   };
 };

@@ -7,7 +7,7 @@ import { useShapesAnimation } from '../hooks/useShapesAnimation';
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { canvasRef, transformToColorful, transformToGrey, exitShapes } = useShapesAnimation();
+  const { canvasRef, transformToColorful, transformToGrey, continueShapesInBackground, exitShapes } = useShapesAnimation();
   
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -35,31 +35,47 @@ export default function Home() {
       }
     });
 
-    // Exit shapes when reaching content section
+    // Continue shapes in content section with reduced opacity
     ScrollTrigger.create({
       trigger: ".content-section",
       start: "top center",
       onEnter: () => {
-        exitShapes();
+        // Continue shapes moving in background
+        continueShapesInBackground();
+        gsap.to("#shapes-canvas", {
+          duration: 1,
+          opacity: 0.2,
+          ease: "power2.out"
+        });
+      },
+      onLeaveBack: () => {
+        gsap.to("#shapes-canvas", {
+          duration: 1,
+          opacity: 1,
+          ease: "power2.out"
+        });
       }
     });
     
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
-  }, [transformToColorful, transformToGrey, exitShapes]);
+  }, [transformToColorful, transformToGrey, continueShapesInBackground, exitShapes]);
 
   return (
     <div ref={containerRef} className="min-h-screen">
       {/* Cloudflare Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm">
-        <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
+        <nav className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-orange-500 rounded" />
-            <span className="text-white font-bold text-lg">CLOUDFLARE</span>
+            <div className="flex items-center gap-1">
+              <div className="w-6 h-6 bg-orange-500 rounded-sm" />
+              <div className="w-6 h-6 bg-orange-400 rounded-sm -ml-3" />
+            </div>
+            <span className="text-black font-bold text-xl ml-2">CLOUDFLARE</span>
           </div>
-          <div className="hidden md:flex items-center gap-8 text-white">
-            <a href="#" className="hover:text-orange-500 transition-colors">How it AI works</a>
+          <div className="hidden md:flex items-center gap-8 text-gray-700 font-medium">
+            <a href="#" className="hover:text-orange-500 transition-colors">How It AI works</a>
             <a href="#" className="hover:text-orange-500 transition-colors">Protect your content</a>
             <a href="#" className="hover:text-orange-500 transition-colors">Start with Cloudflare</a>
           </div>
@@ -86,12 +102,12 @@ export default function Home() {
       </section>
 
       {/* Section 2: Your content fuels AI */}
-      <section className="content-section relative min-h-screen flex items-center justify-center px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-8">
+      <section className="content-section relative min-h-screen flex items-start justify-start px-6 pt-24">
+        <div className="max-w-2xl ml-8 lg:ml-16 relative z-10">
+          <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 text-left">
             Your content fuels AI
           </h2>
-          <div className="space-y-6 text-lg md:text-xl text-gray-300 leading-relaxed">
+          <div className="space-y-6 text-base md:text-lg text-gray-300 leading-relaxed text-left">
             <p>
               Imagine all the photos, articles, videos, and code you and 
               millions of others have ever created. Your unique, high-quality 
