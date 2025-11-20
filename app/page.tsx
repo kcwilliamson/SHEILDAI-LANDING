@@ -4,36 +4,71 @@ import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useShapesAnimation } from '../hooks/useShapesAnimation';
+import { useAntAnimation } from '../hooks/useAntAnimation';
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { canvasRef, transformToColorful, transformToGrey, continueShapesInBackground, exitShapes } = useShapesAnimation();
+  const { canvasRef: antCanvasRef, startSingleAnt, addMoreAnts, addAntsFromOffScreen, resetToSingleAnt } = useAntAnimation();
   
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     
-    // Text transformation animation
-    ScrollTrigger.create({
-      trigger: "#main-text",
-      start: "top center",
-      end: "bottom center",
-      onEnter: () => {
-        transformToColorful();
-        gsap.to("#main-text", {
-          duration: 1.5,
-          innerHTML: "It's<br/>Collective<br/>Intelligence",
-          ease: "power2.out"
-        });
-      },
-      onLeaveBack: () => {
+    // Continuous looping animation - 5 seconds grey, 5 seconds colorful
+    const createShapesLoop = () => {
+      const loop = () => {
+        // Start with grey state for 5 seconds
         transformToGrey();
+        
+        // Smooth fade transition to grey text
         gsap.to("#main-text", {
-          duration: 1.5,
-          innerHTML: "It's not<br/>Artificial<br/>Intelligence",
-          ease: "power2.out"
+          duration: 0.5,
+          opacity: 0,
+          ease: "power2.out",
+          onComplete: () => {
+            gsap.set("#main-text", {
+              innerHTML: "It's not<br/>Artificial<br/>Intelligence"
+            });
+            gsap.to("#main-text", {
+              duration: 0.5,
+              opacity: 1,
+              ease: "power2.out"
+            });
+          }
         });
-      }
-    });
+        
+        // After 5 seconds, switch to colorful for 5 seconds
+        gsap.delayedCall(5, () => {
+          transformToColorful();
+          
+          // Smooth fade transition to colorful text
+          gsap.to("#main-text", {
+            duration: 0.5,
+            opacity: 0,
+            ease: "power2.out",
+            onComplete: () => {
+              gsap.set("#main-text", {
+                innerHTML: "It's<br/>Collective<br/>Intelligence"
+              });
+              gsap.to("#main-text", {
+                duration: 0.5,
+                opacity: 1,
+                ease: "power2.out"
+              });
+            }
+          });
+          
+          // After another 5 seconds, repeat the loop
+          gsap.delayedCall(5, loop);
+        });
+      };
+      
+      // Start the loop
+      loop();
+    };
+
+    // Start the loop when component mounts
+    createShapesLoop();
 
     // Continue shapes in content section with reduced opacity
     ScrollTrigger.create({
@@ -57,10 +92,39 @@ export default function Home() {
       }
     });
     
+    // Ant animation triggers with staged timing
+    ScrollTrigger.create({
+      trigger: ".ant-section",
+      start: "top center",
+      onEnter: () => {
+        startSingleAnt();
+        // Show first text immediately
+        gsap.to(".first-text", {
+          duration: 1,
+          opacity: 1,
+          y: 0,
+          ease: "power2.out"
+        });
+        // Wait 5 seconds, then add more ants and show second text
+        gsap.delayedCall(5, () => {
+          addAntsFromOffScreen(5);
+          gsap.to(".second-text", {
+            duration: 1.5,
+            opacity: 1,
+            y: 0,
+            ease: "power2.out"
+          });
+        });
+        // Continue adding ants gradually
+        gsap.delayedCall(8, () => addAntsFromOffScreen(8));
+        gsap.delayedCall(12, () => addAntsFromOffScreen(10));
+      }
+    });
+
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
-  }, [transformToColorful, transformToGrey, continueShapesInBackground, exitShapes]);
+  }, [transformToColorful, transformToGrey, continueShapesInBackground, exitShapes, startSingleAnt, addMoreAnts, addAntsFromOffScreen, resetToSingleAnt]);
 
   return (
     <div ref={containerRef} className="min-h-screen">
@@ -82,47 +146,86 @@ export default function Home() {
         </nav>
       </header>
 
-      {/* Section 1: It's not Artificial Intelligence */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Section 1: Transforming Shapes */}
+      <section className="relative min-h-screen overflow-hidden">
         <canvas 
           ref={canvasRef}
           id="shapes-canvas" 
           className="absolute inset-0 w-full h-full"
         />
-        <div className="relative z-10 text-center">
-          <h1 
-            id="main-text"
-            className="text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-tight"
-          >
-            It&apos;s not<br />
-            Artificial<br />
-            Intelligence
-          </h1>
+        <div className="relative z-10 h-full flex items-center justify-center">
+          <div className="grid grid-cols-12 w-full">
+            <div className="col-start-4 col-span-6 text-center flex flex-col items-center justify-center">
+              <h1 
+                id="main-text"
+                className="font-bold text-white leading-[0.8] p-6"
+                style={{fontSize: '100px'}}
+              >
+                It&apos;s not<br />
+                Artificial<br />
+                Intelligence
+              </h1>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Section 2: Your content fuels AI */}
-      <section className="content-section relative min-h-screen flex items-start justify-center px-6 pt-24">
-        <div className="max-w-[75ch] relative z-10 p-5">
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 text-center">
-            Your content fuels AI
-          </h2>
-          <div className="space-y-6 text-base md:text-lg text-gray-300 leading-relaxed text-center">
-            <p>
-              Imagine all the photos, articles, videos, and code you and 
-              millions of others have ever created. Your unique, high-quality 
-              work isn&apos;t just viewed by people—it&apos;s being analyzed and 
-              absorbed by modern AI systems.
-            </p>
-            <p className="font-semibold text-white">
-              Essentially, your content is the fuel for Generative AI.
-            </p>
-            <p>
-              These systems look at the vast collection of human creativity to 
-              learn the fundamental rules of style, language, and structure, 
-              allowing the AI to then create its own intelligent content and 
-              improve the collective knowledge base.
-            </p>
+      <section className="content-section relative min-h-screen pt-24">
+        <div className="relative z-10 h-full flex items-center justify-center px-6">
+          <div className="grid grid-cols-12 w-full">
+            <div className="col-start-4 col-span-6 flex flex-col items-center justify-center">
+              <h2 className="font-bold text-white mb-12 text-center leading-tight p-6" style={{fontSize: '60px'}}>
+                Your content fuels AI
+              </h2>
+              <div className="space-y-6 text-lg md:text-xl text-gray-300 leading-relaxed text-center max-w-[65ch] mx-auto p-6">
+                <p>
+                  Imagine all the photos, articles, videos, and code you and 
+                  millions of others have ever created. Your unique, high-quality 
+                  work isn&apos;t just viewed by people—it&apos;s being analyzed and 
+                  absorbed by modern AI systems.
+                </p>
+                <p className="font-semibold text-white">
+                  Essentially, your content is the fuel for Generative AI.
+                </p>
+                <p>
+                  These systems look at the vast collection of human creativity to 
+                  learn the fundamental rules of style, language, and structure, 
+                  allowing the AI to then create its own intelligent content and 
+                  improve the collective knowledge base.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 3: Think of AI like ants */}
+      <section className="ant-section relative min-h-screen" style={{backgroundColor: '#8B5CF6'}}>
+        <canvas 
+          ref={antCanvasRef}
+          className="absolute inset-0 w-full h-full"
+        />
+        <div className="relative z-10 h-full flex items-center justify-center px-6">
+          <div className="grid grid-cols-12 w-full">
+            <div className="col-start-4 col-span-6 flex flex-col items-center justify-center">
+              <div className="first-text opacity-0 translate-y-8 text-center">
+                <h2 className="font-bold text-white mb-8 leading-[0.85] p-6" style={{fontSize: '60px'}}>
+                  Think of AI like ants
+                </h2>
+                <p className="text-3xl md:text-4xl lg:text-5xl text-white/90 mb-12 leading-tight p-6">
+                  no single ant is a genius
+                </p>
+              </div>
+              
+              <div className="second-text opacity-0 translate-y-8 mt-16 text-center">
+                <p className="text-2xl md:text-3xl text-white leading-relaxed p-6">
+                  but together, through simple rules and constant interaction, they build 
+                  complex tunnels, find food, and achieve incredible feats. AI is developing 
+                  similar capabilities through multi-agent and swarm architectures.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
