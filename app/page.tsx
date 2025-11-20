@@ -19,40 +19,56 @@ export default function Home() {
     // Continuous looping animation - 5 seconds grey, 5 seconds colorful
     const createShapesLoop = () => {
       const loop = () => {
-        // Use timeline for perfect synchronization of shapes and text
-        const greyTimeline = gsap.timeline();
+        // Master timeline for smooth transitions
+        const masterTimeline = gsap.timeline();
         
-        greyTimeline.add(() => {
+        // Phase 1: Transform to grey network (0s)
+        masterTimeline.add(() => {
           transformToGrey();
-          
-          // Wait for shapes to fully transform before changing text (1.5s transformation duration)
-          gsap.delayedCall(1.5, () => {
-            gsap.set("#main-text", {
-              innerHTML: "It's<br/>not Artificial<br/>Intelligence"
-            });
+        }, 0);
+        
+        // Phase 2: Smooth text transition to grey text (1.5s - when shapes are settled)
+        masterTimeline.to("#main-text", {
+          duration: 0.3,
+          opacity: 0,
+          ease: "power2.out"
+        }, 1.5)
+        .call(() => {
+          gsap.set("#main-text", {
+            innerHTML: "It's<br/>not Artificial<br/>Intelligence"
           });
+        })
+        .to("#main-text", {
+          duration: 0.3,
+          opacity: 1,
+          ease: "power2.out"
         });
         
-        // After 5 seconds, switch to colorful
-        gsap.delayedCall(5, () => {
-          const colorfulTimeline = gsap.timeline();
-          
-          colorfulTimeline.add(() => {
-            // Change text at exact same moment as shape transformation
-            gsap.set("#main-text", {
-              innerHTML: "It's<br/>Collective<br/>Intelligence"
-            });
-            transformToColorful();
+        // Phase 3: Transform to colorful (5s)
+        masterTimeline.to("#main-text", {
+          duration: 0.3,
+          opacity: 0,
+          ease: "power2.out"
+        }, 5)
+        .add(() => {
+          transformToColorful();
+          gsap.set("#main-text", {
+            innerHTML: "It's<br/>Collective<br/>Intelligence"
           });
-          
-          // After 3.5 seconds, turn colorful shapes grey with connections at current positions
-          gsap.delayedCall(3.5, () => {
-            turnGreyWithConnections();
-          });
-          
-          // After another 5 seconds total, repeat the loop
-          gsap.delayedCall(5, loop);
+        })
+        .to("#main-text", {
+          duration: 0.3,
+          opacity: 1,
+          ease: "power2.out"
         });
+        
+        // Phase 4: Turn shapes grey at current positions (8.5s)
+        masterTimeline.add(() => {
+          turnGreyWithConnections();
+        }, 8.5);
+        
+        // Phase 5: Loop (10s)
+        masterTimeline.call(loop, [], 10);
       };
       
       // Start the loop

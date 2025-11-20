@@ -18,6 +18,7 @@ export const useAntAnimation = () => {
   const antsRef = useRef<Ant[]>([]);
   const animationRef = useRef<number>(0);
   const backgroundColorRef = useRef('#8B5CF6'); // Start with purple
+  const antImageRef = useRef<HTMLImageElement | null>(null);
 
   const antColor = '#F6821F'; // Orange color for ants
 
@@ -37,49 +38,21 @@ export const useAntAnimation = () => {
   };
 
   const drawAnt = (ctx: CanvasRenderingContext2D, ant: Ant) => {
+    if (!antImageRef.current) return;
+
     ctx.save();
     ctx.translate(ant.x, ant.y);
     ctx.rotate(ant.rotation);
-    ctx.fillStyle = antColor;
 
-    // Draw ant body (simplified)
-    // Head
-    ctx.beginPath();
-    ctx.arc(-ant.size * 0.3, 0, ant.size * 0.3, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Body (thorax)
-    ctx.beginPath();
-    ctx.ellipse(0, 0, ant.size * 0.4, ant.size * 0.25, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Abdomen
-    ctx.beginPath();
-    ctx.ellipse(ant.size * 0.4, 0, ant.size * 0.35, ant.size * 0.2, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Legs (simplified)
-    ctx.strokeStyle = antColor;
-    ctx.lineWidth = 1;
-    const legLength = ant.size * 0.4;
-    
-    // Left legs
-    for (let i = 0; i < 3; i++) {
-      const x = (i - 1) * ant.size * 0.2;
-      ctx.beginPath();
-      ctx.moveTo(x, -ant.size * 0.15);
-      ctx.lineTo(x - legLength * 0.7, -ant.size * 0.5);
-      ctx.stroke();
-    }
-    
-    // Right legs
-    for (let i = 0; i < 3; i++) {
-      const x = (i - 1) * ant.size * 0.2;
-      ctx.beginPath();
-      ctx.moveTo(x, ant.size * 0.15);
-      ctx.lineTo(x + legLength * 0.7, ant.size * 0.5);
-      ctx.stroke();
-    }
+    // Draw the PNG image centered at the ant's position
+    const imageSize = ant.size;
+    ctx.drawImage(
+      antImageRef.current,
+      -imageSize / 2,
+      -imageSize / 2,
+      imageSize,
+      imageSize
+    );
 
     ctx.restore();
   };
@@ -169,14 +142,31 @@ export const useAntAnimation = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    // Load the ant PNG image
+    const loadAntImage = () => {
+      const img = new Image();
+      img.onload = () => {
+        antImageRef.current = img;
+        // Start animation after image is loaded
+        startSingleAnt();
+        animate();
+      };
+      img.onerror = () => {
+        console.error('Failed to load ant image');
+        // Fallback: start animation anyway (will not show ants but prevent errors)
+        startSingleAnt();
+        animate();
+      };
+      img.src = '/ant.png';
+    };
+
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
 
     resizeCanvas();
-    startSingleAnt();
-    animate();
+    loadAntImage();
 
     window.addEventListener('resize', resizeCanvas);
 
