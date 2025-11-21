@@ -390,45 +390,45 @@ export default function Home() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             {/* Block Pill */}
-            <div 
-              className="protection-pill bg-pink-500 text-white p-8 rounded-3xl shadow-lg"
-              style={{transform: 'translateY(0px)', opacity: 1}}
-            >
-              <div className="text-center mb-6">
-                <h3 className="text-4xl font-bold mb-4">Block</h3>
-                <div className="text-6xl font-bold">✕</div>
+            <div className="protection-pill relative h-80" style={{transform: 'translateY(0px)', opacity: 1}}>
+              <div className="absolute inset-0 bg-pink-500 rounded-3xl shadow-lg"></div>
+              <div className="relative z-10 p-8 h-full flex flex-col justify-between text-white">
+                <div className="text-center">
+                  <h3 className="text-4xl font-bold mb-4">Block</h3>
+                  <div className="text-6xl font-bold">✕</div>
+                </div>
+                <p className="text-white text-sm leading-relaxed mt-4">
+                  Cloudflare's AI Crawl Control integrates seamlessly with Bot Management and your WAF: simply block bots like GPTBot or ClaudeBot, and the dashboard will confirm your refusal with $4xx$ status codes.
+                </p>
               </div>
-              <p className="text-white text-sm leading-relaxed">
-                Cloudflare's AI Crawl Control integrates seamlessly with Bot Management and your WAF (Web Application Firewall): simply block bots like GPTBot or ClaudeBot, and the Cloudflare dashboard will confirm your refusal by showing an increase in $4xx$ status codes (like $403$ or $402$), verifying that your content is protected.
-              </p>
             </div>
 
             {/* Allow Pill */}
-            <div 
-              className="protection-pill bg-blue-500 text-white p-8 rounded-3xl shadow-lg"
-              style={{transform: 'translateY(0px)', opacity: 1}}
-            >
-              <div className="text-center mb-6">
-                <h3 className="text-4xl font-bold mb-4">Allow</h3>
-                <div className="text-6xl font-bold">✓</div>
+            <div className="protection-pill relative h-80" style={{transform: 'translateY(0px)', opacity: 1}}>
+              <div className="absolute inset-0 bg-blue-500 rounded-3xl shadow-lg"></div>
+              <div className="relative z-10 p-8 h-full flex flex-col justify-between text-white">
+                <div className="text-center">
+                  <h3 className="text-4xl font-bold mb-4">Allow</h3>
+                  <div className="text-6xl font-bold">✓</div>
+                </div>
+                <p className="text-white text-sm leading-relaxed mt-4">
+                  When you Allow an AI agent via AI Crawl Control, the Bot Management system provides detailed tracking with $2xx$ status codes and reveals which pages these allowed AI agents value most.
+                </p>
               </div>
-              <p className="text-white text-sm leading-relaxed">
-                When you Allow an AI agent via AI Crawl Control, the Bot Management system provides detailed tracking: the Metrics tab displays their successful requests (with $2xx$ status codes), and the Most popular paths table reveals exactly which of your pages these allowed AI agents value most.
-              </p>
             </div>
 
             {/* Charge Pill */}
-            <div 
-              className="protection-pill bg-green-500 text-white p-8 rounded-3xl shadow-lg"
-              style={{transform: 'translateY(0px)', opacity: 1}}
-            >
-              <div className="text-center mb-6">
-                <h3 className="text-4xl font-bold mb-4">Charge</h3>
-                <div className="text-6xl font-bold">$</div>
+            <div className="protection-pill relative h-80" style={{transform: 'translateY(0px)', opacity: 1}}>
+              <div className="absolute inset-0 bg-green-500 rounded-3xl shadow-lg"></div>
+              <div className="relative z-10 p-8 h-full flex flex-col justify-between text-white">
+                <div className="text-center">
+                  <h3 className="text-4xl font-bold mb-4">Charge</h3>
+                  <div className="text-6xl font-bold">$</div>
+                </div>
+                <p className="text-white text-sm leading-relaxed mt-4">
+                  Enable the Charge rule through Pay Per Crawl feature in AI Crawl Control, which enforces your pricing policy by signaling $402$ Payment Required status for monetized requests.
+                </p>
               </div>
-              <p className="text-white text-sm leading-relaxed">
-                Enable the Charge rule through the Pay Per Crawl feature in AI Crawl Control, which uses Bot Management for accurate identification. The system enforces your pricing policy by signaling a $402$ Payment Required status, correctly logging every monetized request for subsequent billing and payout.
-              </p>
             </div>
           </div>
 
@@ -442,8 +442,17 @@ export default function Home() {
       </section>
 
       {/* Section 5: Connect with Cloudflare */}
-      <section id="connect-section" className="relative min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center px-6 py-20">
+      <section id="connect-section" className="relative min-h-screen bg-white flex items-center justify-center px-6 py-20">
         <div className="max-w-6xl mx-auto text-center">
+          {/* Cloudflare Logo */}
+          <div className="flex justify-center mb-8">
+            <img 
+              src="https://pub-aa908c10829e4ed6b353da031aeb7c2b.r2.dev/Content%20Protection/1pixel-down__1_.svg" 
+              alt="Cloudflare Logo" 
+              className="h-12"
+            />
+          </div>
+          
           <h2 className="font-bold text-gray-900 mb-8 leading-tight" style={{fontSize: '64px'}}>
             Connect with Cloudflare
           </h2>
@@ -453,19 +462,19 @@ export default function Home() {
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            <div className="bg-white p-8 rounded-2xl shadow-lg">
+            <div className="bg-gray-50 p-8 rounded-2xl shadow-sm border">
               <div className="text-blue-500 text-4xl mb-4">🛡️</div>
               <h3 className="text-xl font-bold text-gray-900 mb-4">Content Protection</h3>
               <p className="text-gray-600">Secure your intellectual property from unauthorized AI scraping</p>
             </div>
             
-            <div className="bg-white p-8 rounded-2xl shadow-lg">
+            <div className="bg-gray-50 p-8 rounded-2xl shadow-sm border">
               <div className="text-green-500 text-4xl mb-4">💰</div>
               <h3 className="text-xl font-bold text-gray-900 mb-4">Monetization</h3>
               <p className="text-gray-600">Generate revenue from AI companies accessing your content</p>
             </div>
             
-            <div className="bg-white p-8 rounded-2xl shadow-lg">
+            <div className="bg-gray-50 p-8 rounded-2xl shadow-sm border">
               <div className="text-orange-500 text-4xl mb-4">⚡</div>
               <h3 className="text-xl font-bold text-gray-900 mb-4">Easy Setup</h3>
               <p className="text-gray-600">Get up and running in minutes with our expert guidance</p>
@@ -476,7 +485,7 @@ export default function Home() {
             href="https://www.cloudflare.com/plans/enterprise/contact/" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="inline-block bg-gradient-to-r from-blue-600 to-orange-500 text-white px-12 py-4 rounded-full text-xl font-semibold hover:from-blue-700 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
+            className="inline-block bg-orange-500 text-white px-12 py-4 rounded-full text-xl font-semibold hover:bg-orange-600 transition-colors duration-200 shadow-lg"
           >
             Connect with Cloudflare Sales
           </a>
