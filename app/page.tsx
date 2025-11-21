@@ -120,9 +120,10 @@ export default function Home() {
         
         startSingleAnt();
         // Continue adding ants gradually (text is already visible)
-        gsap.delayedCall(2, () => addAntsFromOffScreen(5));
+        gsap.delayedCall(1, () => addAntsFromOffScreen(3));
+        gsap.delayedCall(3, () => addAntsFromOffScreen(5));
         gsap.delayedCall(5, () => addAntsFromOffScreen(8));
-        gsap.delayedCall(8, () => addAntsFromOffScreen(10));
+        gsap.delayedCall(7, () => addAntsFromOffScreen(12));
       },
       onLeaveBack: () => {
         // Reset ant section position when scrolling back up
@@ -130,6 +131,23 @@ export default function Home() {
           duration: 1,
           y: "20%",
           opacity: 0.8,
+          ease: "power2.out"
+        });
+      }
+    });
+
+    // Scroll-triggered box pushing animation
+    ScrollTrigger.create({
+      trigger: ".ant-section",
+      start: "top center",
+      end: "bottom top",
+      scrub: 2,
+      onUpdate: (self) => {
+        const progress = self.progress;
+        // Move the container to the left as user scrolls (ants pushing effect)
+        const pushDistance = progress * 600; // Push 600px to the left
+        gsap.set("#ant-container", {
+          x: -pushDistance,
           ease: "power2.out"
         });
       }
@@ -234,8 +252,12 @@ export default function Home() {
 
       {/* Section 3: Think of AI like ants */}
       <section className="ant-section relative" style={{backgroundColor: '#000000', height: '70vh', marginTop: 0}}>
-        <div className="relative z-10 h-full flex items-center justify-center px-6">
-          <div className="bg-purple-600 rounded-3xl p-12 max-w-5xl mx-auto shadow-2xl" style={{backgroundColor: '#8B5CF6'}}>
+        <div className="relative z-10 h-full flex items-center justify-center px-6 overflow-hidden">
+          <div 
+            id="ant-container"
+            className="bg-purple-600 rounded-3xl p-12 shadow-2xl transition-transform duration-1000 ease-out"
+            style={{backgroundColor: '#8B5CF6', width: '800px', position: 'relative'}}
+          >
             <canvas 
               ref={antCanvasRef}
               className="absolute inset-0 w-full h-full rounded-3xl"
@@ -244,7 +266,7 @@ export default function Home() {
               <h2 className="font-bold text-white mb-8 leading-[0.85]" style={{fontSize: '48px'}}>
                 Think of AI like ants
               </h2>
-              <p className="text-white text-lg leading-relaxed max-w-3xl mx-auto">
+              <p className="text-white text-lg leading-relaxed">
                 No single ant is a genius, but together they create complex systems, 
                 build intricate colonies, and solve problems that would be impossible 
                 for any individual ant to tackle alone.

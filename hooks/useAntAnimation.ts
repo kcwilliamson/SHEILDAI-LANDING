@@ -27,11 +27,11 @@ export const useAntAnimation = () => {
     if (!canvas) throw new Error('Canvas not found');
 
     return {
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 1.2, // Faster horizontal speed
-      vy: (Math.random() - 0.5) * 1.2, // Faster vertical speed
-      size: 35 + Math.random() * 15, // Much larger ant size 35-50px
+      x: canvas.width * 0.6 + Math.random() * (canvas.width * 0.3), // Start from right side
+      y: canvas.height * 0.3 + Math.random() * (canvas.height * 0.4), // Middle vertical area
+      vx: -0.8 - Math.random() * 0.4, // Always move left
+      vy: (Math.random() - 0.5) * 0.5, // Slower vertical movement
+      size: 30 + Math.random() * 10, // Ant size 30-40px
       rotation: Math.random() * Math.PI * 2,
       id
     };
@@ -77,8 +77,19 @@ export const useAntAnimation = () => {
       // Update rotation based on movement
       ant.rotation = Math.atan2(ant.vy, ant.vx);
 
-      // Bounce off edges
-      if (ant.x < 0 || ant.x > canvas.width) ant.vx *= -1;
+      // Stack behavior: when ants reach the left edge, they stack up
+      if (ant.x <= 30) {
+        ant.x = 30; // Stop at left edge
+        ant.vx = 0; // Stop horizontal movement
+        ant.vy *= 0.9; // Gradually slow down vertical movement
+        
+        // Stack ants on top of each other
+        const stackHeight = 40;
+        const antsAtEdge = antsRef.current.filter(a => a.x <= 35).length;
+        ant.y = canvas.height * 0.7 - (antsAtEdge * stackHeight * 0.3);
+      }
+
+      // Bounce off top/bottom edges only
       if (ant.y < 0 || ant.y > canvas.height) ant.vy *= -1;
 
       // Keep within bounds
