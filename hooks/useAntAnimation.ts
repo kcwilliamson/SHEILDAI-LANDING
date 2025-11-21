@@ -44,7 +44,7 @@ export const useAntAnimation = () => {
     ctx.translate(ant.x, ant.y);
     ctx.rotate(ant.rotation);
 
-    // Draw the PNG image centered at the ant's position
+    // Draw the PNG image centered at the ant's position (original orange color)
     const imageSize = ant.size;
     ctx.drawImage(
       antImageRef.current,
@@ -161,31 +161,25 @@ export const useAntAnimation = () => {
     const firstAnt = createAnt(0);
     antsRef.current = [firstAnt];
     
-    // Add several more ants over time
+    // Add several more ants over time - they'll just crawl naturally
     gsap.delayedCall(1, () => {
-      addMoreAnts(3);
+      addMoreAnts(5); // Add some ants
     });
     
     gsap.delayedCall(2, () => {
-      addMoreAnts(5);
+      addMoreAnts(8); // Add more ants
     });
     
-    // After 3 seconds, make all ants move left and trigger box movement
     gsap.delayedCall(3, () => {
-      // Make all ants move left
-      antsRef.current.forEach((ant, index) => {
-        gsap.to(ant, {
-          duration: 2,
-          vx: -3 - Math.random() * 2, // Faster leftward movement
-          vy: (Math.random() - 0.5) * 0.5, // Small vertical variation
-          ease: "power2.out",
-          delay: index * 0.1 // Stagger the movement slightly
-        });
-      });
-      
-      // Trigger the box movement callback
-      onAllAntsMove();
+      addMoreAnts(10); // Add even more ants
     });
+    
+    gsap.delayedCall(4, () => {
+      addMoreAnts(12); // Final batch of ants
+    });
+    
+    // No coordinated movement - ants just crawl naturally across the box
+    // The box movement will be handled separately in the main component
   };
 
   useEffect(() => {

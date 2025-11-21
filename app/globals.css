@@ -26,3 +26,10 @@
     text-wrap: balance;
   }
 }
+
+@layer components {
+  header {
+    background-color: #ffffff !important;
+    color: #374151 !important;
+  }
+}

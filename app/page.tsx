@@ -142,10 +142,11 @@ export default function Home() {
         });
       },
       onEnter: () => {
-        // Start the sequential ant animation
-        startSequentialAntAnimation(() => {
-          // This callback triggers when all ants move left
-          // Start the box movement to the left
+        // Start the sequential ant animation - ants just crawl naturally
+        startSequentialAntAnimation(() => {});
+        
+        // Start box movement independently after 5 seconds
+        gsap.delayedCall(5, () => {
           gsap.to("#ant-container", {
             duration: 3,
             x: -600,
@@ -198,37 +199,42 @@ export default function Home() {
 
   return (
     <div ref={containerRef} className="min-h-screen">
-      {/* White Sticky Menu */}
-      <header className="sticky top-0 left-0 right-0 z-50 bg-white shadow-sm border-b border-gray-100">
-        <nav className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          {/* Cloudflare Logo - Far Left */}
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1">
-              <div className="w-7 h-7 bg-orange-500 rounded-sm" />
-              <div className="w-7 h-7 bg-orange-400 rounded-sm -ml-3" />
+      {/* Header */}
+      <header className="w-full bg-white shadow-lg border-b border-gray-200">
+        <nav className="flex items-center justify-between px-8 py-4 w-full">
+          {/* Left Side - Cloudflare Logo */}
+          <div className="flex items-center">
+            <a href="https://cloudflare.com" target="_blank" rel="noopener noreferrer" className="flex items-center hover:opacity-80 transition-opacity">
+              <img 
+                src="https://pub-aa908c10829e4ed6b353da031aeb7c2b.r2.dev/Content%20Protection/1pixel-down__1_.svg" 
+                alt="Cloudflare Logo" 
+                className="h-10"
+              />
+            </a>
+          </div>
+
+          {/* Right Side - Navigation Menu */}
+          <div className="flex items-center">
+            {/* Desktop Menu */}
+            <div className="hidden md:flex items-center space-x-8">
+              <a href="#hero-section" className="text-gray-800 hover:text-orange-500 font-semibold transition-colors px-3 py-2 rounded-md hover:bg-gray-50">
+                What is AI
+              </a>
+              <a href="#protection-section" className="text-gray-800 hover:text-orange-500 font-semibold transition-colors px-3 py-2 rounded-md hover:bg-gray-50">
+                How to protect your content
+              </a>
+              <a href="#connect-section" className="bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600 font-semibold transition-all duration-200 shadow-md hover:shadow-lg ml-4">
+                Connect with Cloudflare
+              </a>
             </div>
-            <span className="text-black font-bold text-xl ml-2">CLOUDFLARE</span>
+            
+            {/* Mobile Menu Button */}
+            <button className="md:hidden p-2 text-gray-800 hover:text-orange-500 transition-colors ml-4">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
           </div>
-          
-          {/* Navigation Menu - Far Right */}
-          <div className="hidden md:flex items-center gap-8">
-            <a href="#" className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200">
-              What is AI?
-            </a>
-            <a href="#" className="text-gray-700 hover:text-orange-500 font-medium transition-colors duration-200">
-              How to protect your content
-            </a>
-            <a href="#" className="bg-orange-500 text-white px-6 py-2 rounded-md hover:bg-orange-600 font-medium transition-colors duration-200">
-              Get Started
-            </a>
-          </div>
-          
-          {/* Mobile Menu Button */}
-          <button className="md:hidden p-2 text-gray-700 hover:text-orange-500">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
         </nav>
       </header>
 
@@ -302,12 +308,12 @@ export default function Home() {
                     Think of AI like ants
                   </h2>
                   <div className="max-w-4xl space-y-4">
-                    <p className="text-white font-inter font-extrabold leading-relaxed text-center max-w-[60ch] mx-auto" style={{fontSize: '24px'}}>
+                    <p className="text-white font-inter font-extrabold leading-relaxed text-center max-w-[60ch] mx-auto" style={{fontSize: '18px'}}>
                       No single ant is a genius, but together they create complex systems, 
                       build intricate colonies, and solve problems that would be impossible 
                       for any individual ant to tackle alone.
                     </p>
-                    <p className="text-white font-inter font-extrabold leading-relaxed text-center max-w-[60ch] mx-auto" style={{fontSize: '24px'}}>
+                    <p className="text-white font-inter font-extrabold leading-relaxed text-center max-w-[60ch] mx-auto" style={{fontSize: '18px'}}>
                       Just like an ant colony, AI is now leveraging multi-agent systems. Instead of one brain, 
                       multiple, specialized AI agents collaborate, share data, and follow simple rules to solve 
                       complex problems. This creates a "swarm intelligence" that dramatically boosts performance 
@@ -432,6 +438,48 @@ export default function Home() {
               Contact Cloudflare
             </button>
           </div>
+        </div>
+      </section>
+
+      {/* Section 5: Connect with Cloudflare */}
+      <section id="connect-section" className="relative min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center px-6 py-20">
+        <div className="max-w-6xl mx-auto text-center">
+          <h2 className="font-bold text-gray-900 mb-8 leading-tight" style={{fontSize: '64px'}}>
+            Connect with Cloudflare
+          </h2>
+          <p className="text-xl text-gray-700 mb-12 max-w-4xl mx-auto leading-relaxed">
+            Ready to protect your content and monetize your AI interactions? Our team of experts is standing by 
+            to help you implement the perfect solution for your business needs.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <div className="bg-white p-8 rounded-2xl shadow-lg">
+              <div className="text-blue-500 text-4xl mb-4">🛡️</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Content Protection</h3>
+              <p className="text-gray-600">Secure your intellectual property from unauthorized AI scraping</p>
+            </div>
+            
+            <div className="bg-white p-8 rounded-2xl shadow-lg">
+              <div className="text-green-500 text-4xl mb-4">💰</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Monetization</h3>
+              <p className="text-gray-600">Generate revenue from AI companies accessing your content</p>
+            </div>
+            
+            <div className="bg-white p-8 rounded-2xl shadow-lg">
+              <div className="text-orange-500 text-4xl mb-4">⚡</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Easy Setup</h3>
+              <p className="text-gray-600">Get up and running in minutes with our expert guidance</p>
+            </div>
+          </div>
+          
+          <a 
+            href="https://www.cloudflare.com/plans/enterprise/contact/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-block bg-gradient-to-r from-blue-600 to-orange-500 text-white px-12 py-4 rounded-full text-xl font-semibold hover:from-blue-700 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
+          >
+            Connect with Cloudflare Sales
+          </a>
         </div>
       </section>
     </div>
