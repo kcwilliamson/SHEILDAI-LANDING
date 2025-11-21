@@ -26,7 +26,7 @@ export default function Home() {
       // Set initial text after shapes are settled
       gsap.delayedCall(1.5, () => {
         gsap.set("#main-text", {
-          innerHTML: "It's<br/>not Artificial<br/>Intelligence"
+          innerHTML: "It's<br/>Not Artificial<br/>Intelligence"
         });
         gsap.to("#main-text", {
           duration: 0.3,
@@ -80,7 +80,7 @@ export default function Home() {
               // Text and animation change simultaneously
               transformToGrey();
               gsap.set("#main-text", {
-                innerHTML: "It's<br/>not Artificial<br/>Intelligence"
+                innerHTML: "It's<br/>Not Artificial<br/>Intelligence"
               });
             })
             .to("#main-text", {
@@ -100,52 +100,32 @@ export default function Home() {
     // Initialize the page
     initializeShapes();
     createTimedAnimation();
-    
-    // Set initial state for ant section
-    gsap.set(".ant-section", { y: "20%", opacity: 0.8 });
 
     
-    // Ant animation triggers after all bars complete
+    // Ant animation starts when entering section
     ScrollTrigger.create({
-      trigger: ".content-section",
-      start: "bottom top+=50px",
+      trigger: ".ant-section",
+      start: "top center",
       onEnter: () => {
-        // Animate ant section into view
-        gsap.to(".ant-section", {
-          duration: 1.5,
-          y: "0%",
-          opacity: 1,
-          ease: "power2.out"
-        });
-        
         startSingleAnt();
         // Continue adding ants gradually (text is already visible)
         gsap.delayedCall(1, () => addAntsFromOffScreen(3));
         gsap.delayedCall(3, () => addAntsFromOffScreen(5));
         gsap.delayedCall(5, () => addAntsFromOffScreen(8));
         gsap.delayedCall(7, () => addAntsFromOffScreen(12));
-      },
-      onLeaveBack: () => {
-        // Reset ant section position when scrolling back up
-        gsap.to(".ant-section", {
-          duration: 1,
-          y: "20%",
-          opacity: 0.8,
-          ease: "power2.out"
-        });
       }
     });
 
-    // Scroll-triggered box pushing animation - starts at 75% down the section
+    // Scroll-triggered box pushing animation - starts after bars are completely gone
     ScrollTrigger.create({
       trigger: ".ant-section",
-      start: "75% center",
+      start: "60% center",
       end: "bottom top",
       scrub: 2,
       onUpdate: (self) => {
         const progress = self.progress;
         // Move the container to the left as user scrolls (ants pushing effect)
-        const pushDistance = progress * 800; // Push 800px to the left for larger container
+        const pushDistance = progress * 600; // Push 600px to the left
         gsap.set("#ant-container", {
           x: -pushDistance,
           ease: "power2.out"
@@ -242,21 +222,18 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Section 2: Parallax Bars */}
-      <section className="content-section relative" style={{ height: '50vh' }}>
+      {/* Section 2: Think of AI like ants */}
+      <section className="ant-section relative" style={{backgroundColor: '#000000', height: '100vh', marginTop: 0}}>
+        {/* Bars canvas that reveals the ant box */}
         <canvas 
           ref={parallaxCanvasRef}
-          className="absolute inset-0 w-full h-full"
+          className="absolute inset-0 w-full h-full z-30"
         />
-      </section>
-
-      {/* Section 3: Think of AI like ants */}
-      <section className="ant-section relative" style={{backgroundColor: '#000000', minHeight: '100vh', marginTop: 0}}>
         <div className="relative z-10 h-full flex items-center justify-center p-6 overflow-hidden">
           <div 
             id="ant-container"
             className="bg-purple-600 shadow-2xl transition-transform duration-1000 ease-out"
-            style={{backgroundColor: '#8B5CF6', width: '90vw', height: '80vh', maxWidth: '1400px', position: 'relative', borderRadius: '60px'}}
+            style={{backgroundColor: '#8B5CF6', width: '70vh', height: '70vh', position: 'relative', borderRadius: '60px'}}
           >
             <canvas 
               ref={antCanvasRef}
@@ -266,11 +243,11 @@ export default function Home() {
             <div className="relative z-20 h-full flex items-center justify-center px-6">
               <div className="grid grid-cols-12 w-full">
                 <div className="col-start-3 col-span-8 text-center flex flex-col items-center justify-center">
-                  <h2 className="font-bold text-white mb-8 leading-[0.85] p-4" style={{fontSize: '64px'}}>
+                  <h2 className="font-bold text-white mb-6 leading-[0.85] p-4" style={{fontSize: '48px'}}>
                     Think of AI like ants
                   </h2>
                   <div className="max-w-4xl">
-                    <p className="text-white text-xl leading-relaxed text-center max-w-[60ch] mx-auto">
+                    <p className="text-white text-lg leading-relaxed text-center max-w-[60ch] mx-auto">
                       No single ant is a genius, but together they create complex systems, 
                       build intricate colonies, and solve problems that would be impossible 
                       for any individual ant to tackle alone.
@@ -283,7 +260,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Section 4: In this model, you lose */}
+      {/* Section 3: In this model, you lose */}
       <section className="relative min-h-screen bg-black flex items-center justify-center px-6">
         <div className="grid grid-cols-12 w-full">
           <div className="col-start-3 col-span-8 text-center flex flex-col items-center justify-center">

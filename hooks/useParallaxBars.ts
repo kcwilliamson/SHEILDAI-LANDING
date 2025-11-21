@@ -27,12 +27,14 @@ export const useParallaxBars = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    const barHeight = canvas.height / colors.length;
+    
     barsRef.current = colors.map((color, index) => ({
       color,
-      width: 0, // Start with no width
-      height: canvas.height / colors.length,
-      y: (canvas.height / colors.length) * index,
-      progress: 0
+      width: canvas.width, // Start with full width to cover everything
+      height: barHeight,
+      y: index * barHeight,
+      progress: 1
     }));
   };
 
@@ -75,20 +77,21 @@ export const useParallaxBars = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Update bar widths based on scroll progress
+    // Reverse animation - bars start full width and reveal content as they shrink
     barsRef.current.forEach((bar, index) => {
-      // Reverse stagger - bottom bars (higher index) start first, all reach full width
+      // Bottom bars shrink first (revealing from bottom up)
       const totalBars = barsRef.current.length;
-      const reverseIndex = totalBars - 1 - index; // Flip the order
+      const reverseIndex = totalBars - 1 - index;
       const startProgress = reverseIndex * 0.08;
-      const endProgress = 0.85; // All bars complete by 85% of scroll progress
+      const endProgress = 0.6; // All bars complete shrinking by 60% of scroll progress
       const barProgress = Math.max(0, Math.min(1, (progress - startProgress) / (endProgress - startProgress)));
       
       // Ease the progress for smoother animation
-      const easedProgress = gsap.parseEase("power2.out")(Math.min(1, barProgress));
+      const easedProgress = gsap.parseEase("power2.out")(barProgress);
       
-      bar.width = canvas.width * easedProgress;
-      bar.progress = easedProgress;
+      // Start at full width, shrink to reveal content
+      bar.width = canvas.width * (1 - easedProgress);
+      bar.progress = 1 - easedProgress;
     });
 
     renderBars();
@@ -112,10 +115,10 @@ export const useParallaxBars = () => {
 
     // Create ScrollTrigger for parallax animation
     ScrollTrigger.create({
-      trigger: ".content-section",
-      start: "center bottom", // Start when halfway through section
-      end: "bottom top",
-      scrub: 1, // Smooth scrubbing
+      trigger: ".ant-section",
+      start: "top bottom", // Start when ant section enters viewport
+      end: "center center", // Complete reveal by center of section
+      scrub: 5, // Even slower, more dampened scrubbing
       onUpdate: (self) => {
         animateBars(self.progress);
       },
