@@ -9,61 +9,126 @@ import { useParallaxBars } from '../hooks/useParallaxBars';
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const isColorfulRef = useRef(false);
+  const scrollLockedRef = useRef(false);
   const { canvasRef, transformToColorful, transformToGrey, turnGreyWithConnections, continueShapesInBackground, exitShapes } = useShapesAnimation();
   const { canvasRef: antCanvasRef, startSingleAnt, addMoreAnts, addAntsFromOffScreen, resetToSingleAnt } = useAntAnimation();
   const { canvasRef: parallaxCanvasRef } = useParallaxBars();
+
+  // Scroll control functions
+  const lockScroll = () => {
+    if (scrollLockedRef.current) return;
+    scrollLockedRef.current = true;
+    document.body.style.overflow = 'hidden';
+  };
+
+  const unlockScroll = () => {
+    scrollLockedRef.current = false;
+    document.body.style.overflow = '';
+  };
   
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     
-    // Simple one-time animation: 5 seconds grey, then colorful indefinitely
-    const createShapesAnimation = () => {
-      const masterTimeline = gsap.timeline();
+    // Initialize with grey shapes and text
+    const initializeShapes = () => {
+      // Start with grey connected shapes
+      transformToGrey();
       
-      // Phase 1: Start with grey network (0s)
-      masterTimeline.add(() => {
-        transformToGrey();
-      }, 0);
-      
-      // Phase 2: Set initial grey text (1.5s - when shapes are settled)
-      masterTimeline.to("#main-text", {
-        duration: 0.3,
-        opacity: 0,
-        ease: "power2.out"
-      }, 1.5)
-      .call(() => {
+      // Set initial text after shapes are settled
+      gsap.delayedCall(1.5, () => {
         gsap.set("#main-text", {
           innerHTML: "It's<br/>not Artificial<br/>Intelligence"
         });
-      })
-      .to("#main-text", {
-        duration: 0.3,
-        opacity: 1,
-        ease: "power2.out"
-      });
-      
-      // Phase 3: Transform to colorful after 5 seconds (5s)
-      masterTimeline.to("#main-text", {
-        duration: 0.3,
-        opacity: 0,
-        ease: "power2.out"
-      }, 5)
-      .add(() => {
-        transformToColorful();
-        gsap.set("#main-text", {
-          innerHTML: "It's<br/>Collective<br/>Intelligence"
+        gsap.to("#main-text", {
+          duration: 0.3,
+          opacity: 1,
+          ease: "power2.out"
         });
-      })
-      .to("#main-text", {
-        duration: 0.3,
-        opacity: 1,
-        ease: "power2.out"
       });
-      // Stay colorful indefinitely - no more phases
     };
 
-    // Start the animation when component mounts
-    createShapesAnimation();
+    // Bidirectional scroll-triggered transformation with scroll lock
+    const createScrollAnimation = () => {
+      ScrollTrigger.create({
+        trigger: "#hero-section",
+        start: "top top-=100px",
+        end: "top top+=100px",
+        scrub: false,
+        onEnter: () => {
+          if (!isColorfulRef.current) {
+            // Lock scroll during transition to colorful
+            lockScroll();
+            
+            // Transform to colorful shapes on scroll down
+            const transformTimeline = gsap.timeline({
+              onComplete: () => {
+                // Unlock scroll when animation is complete
+                gsap.delayedCall(0.5, unlockScroll);
+              }
+            });
+            
+            transformTimeline
+              .to("#main-text", {
+                duration: 0.6,
+                opacity: 0,
+                ease: "power2.out"
+              })
+              .add(() => {
+                transformToColorful();
+                gsap.set("#main-text", {
+                  innerHTML: "It's<br/>Collective<br/>Intelligence"
+                });
+              })
+              .to("#main-text", {
+                duration: 0.8,
+                opacity: 1,
+                ease: "power2.out"
+              });
+            
+            isColorfulRef.current = true;
+          }
+        },
+        onLeaveBack: () => {
+          if (isColorfulRef.current) {
+            // Lock scroll during transition back to grey
+            lockScroll();
+            
+            // Transform back to grey shapes on scroll up
+            const revertTimeline = gsap.timeline({
+              onComplete: () => {
+                // Unlock scroll when animation is complete
+                gsap.delayedCall(0.5, unlockScroll);
+              }
+            });
+            
+            revertTimeline
+              .to("#main-text", {
+                duration: 0.6,
+                opacity: 0,
+                ease: "power2.out"
+              })
+              .add(() => {
+                transformToGrey();
+                gsap.set("#main-text", {
+                  innerHTML: "It's<br/>not Artificial<br/>Intelligence"
+                });
+              })
+              .to("#main-text", {
+                duration: 0.8,
+                opacity: 1,
+                ease: "power2.out"
+              });
+            
+            isColorfulRef.current = false;
+          }
+        }
+      });
+    };
+
+    // Initialize the page
+    initializeShapes();
+    createScrollAnimation();
 
     // Continue shapes in content section with reduced opacity
     ScrollTrigger.create({
@@ -118,6 +183,8 @@ export default function Home() {
 
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      // Cleanup scroll lock on unmount
+      document.body.style.overflow = '';
     };
   }, [transformToColorful, transformToGrey, continueShapesInBackground, exitShapes, startSingleAnt, addMoreAnts, addAntsFromOffScreen, resetToSingleAnt]);
 
@@ -158,7 +225,7 @@ export default function Home() {
       </header>
 
       {/* Section 1: Transforming Shapes */}
-      <section className="relative min-h-screen overflow-hidden">
+      <section id="hero-section" className="relative min-h-screen overflow-hidden">
         <canvas 
           ref={canvasRef}
           id="shapes-canvas" 
