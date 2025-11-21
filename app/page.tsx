@@ -26,7 +26,7 @@ export default function Home() {
       // Set initial text after shapes are settled
       gsap.delayedCall(1.5, () => {
         gsap.set("#main-text", {
-          innerHTML: "It's<br/>Not Artificial<br/>Intelligence"
+          innerHTML: "It's<br/>Not Artificial<br/>Intellegence"
         });
         gsap.to("#main-text", {
           duration: 0.3,
@@ -58,7 +58,7 @@ export default function Home() {
               // Text and animation change simultaneously
               transformToColorful();
               gsap.set("#main-text", {
-                innerHTML: "It's<br/>Collective<br/>Intelligence"
+                innerHTML: "It's<br/>Collective<br/>Intellegence"
               });
             })
             .to("#main-text", {
@@ -80,7 +80,7 @@ export default function Home() {
               // Text and animation change simultaneously
               transformToGrey();
               gsap.set("#main-text", {
-                innerHTML: "It's<br/>Not Artificial<br/>Intelligence"
+                innerHTML: "It's<br/>Not Artificial<br/>Intellegence"
               });
             })
             .to("#main-text", {
@@ -139,6 +139,7 @@ export default function Home() {
         });
       }
     });
+
 
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
@@ -274,7 +275,7 @@ export default function Home() {
       </section>
 
       {/* Section 3: In this model, you lose */}
-      <section className="relative min-h-screen bg-black flex items-center justify-center px-6">
+      <section id="lose-section" className="relative min-h-screen bg-black flex items-center justify-center px-6">
         <div className="grid grid-cols-12 w-full">
           <div className="col-start-3 col-span-8 text-center flex flex-col items-center justify-center">
             <h2 className="font-bold text-white mb-12 leading-[0.9] p-4" style={{fontSize: '72px'}}>
@@ -282,10 +283,44 @@ export default function Home() {
             </h2>
             <div className="max-w-4xl">
               <p className="text-white text-xl leading-relaxed text-center max-w-[60ch] mx-auto">
-                Your original content fundamentally enables modern AI by serving as the massive training 
+                Your <span 
+                  className="highlight-phrase relative inline-block" 
+                  data-highlight="orange"
+                  style={{position: 'relative'}}
+                >
+                  <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#FF8C00', zIndex: 0}}></span>
+                  original content
+                </span> fundamentally enables modern AI by serving as the massive training 
                 data set from which systems learn human creativity and style. The core issue is that your 
-                work is being scraped and used commercially to build these AI models without granting you 
-                credit, attribution, or direct payment, allowing the AI to generate competing content that 
+                work <span 
+                  className="highlight-phrase relative inline-block" 
+                  data-highlight="purple"
+                  style={{position: 'relative'}}
+                >
+                  <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#C147E9', zIndex: 0}}></span>
+                  is being scraped
+                </span> and used commercially to build these AI models <span 
+                  className="highlight-phrase relative inline-block" 
+                  data-highlight="green"
+                  style={{position: 'relative'}}
+                >
+                  <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#00CED1', zIndex: 0}}></span>
+                  without credit
+                </span>, <span 
+                  className="highlight-phrase relative inline-block" 
+                  data-highlight="blue"
+                  style={{position: 'relative'}}
+                >
+                  <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#4A90E2', zIndex: 0}}></span>
+                  attribution
+                </span>, or <span 
+                  className="highlight-phrase relative inline-block" 
+                  data-highlight="pink"
+                  style={{position: 'relative'}}
+                >
+                  <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#E91E63', zIndex: 0}}></span>
+                  direct payment
+                </span>, allowing the AI to generate competing content that 
                 bypasses your platform and effectively breaks your traditional monetization stream.
               </p>
             </div>
