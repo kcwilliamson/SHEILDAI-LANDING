@@ -157,7 +157,7 @@ export const useAntAnimation = () => {
         startSingleAnt();
         animate();
       };
-      img.src = '/ant.png';
+      img.src = 'https://pub-aa908c10829e4ed6b353da031aeb7c2b.r2.dev/Content%20Protection/ant.png';
     };
 
     const resizeCanvas = () => {

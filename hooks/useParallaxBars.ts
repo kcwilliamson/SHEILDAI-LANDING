@@ -46,10 +46,28 @@ export const useParallaxBars = () => {
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw bars
+    // Draw bars with rounded right edges
     barsRef.current.forEach(bar => {
       ctx.fillStyle = bar.color;
-      ctx.fillRect(0, bar.y, bar.width, bar.height);
+      
+      const radius = bar.height / 2; // Radius for rounded right edge
+      
+      if (bar.width <= radius) {
+        // If width is less than radius, just draw a circle
+        ctx.beginPath();
+        ctx.arc(radius, bar.y + radius, Math.min(radius, bar.width), 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        // Draw rectangle with rounded right edge
+        ctx.beginPath();
+        ctx.moveTo(0, bar.y);
+        ctx.lineTo(bar.width - radius, bar.y); // Top edge
+        ctx.arc(bar.width - radius, bar.y + radius, radius, -Math.PI / 2, Math.PI / 2); // Right rounded edge
+        ctx.lineTo(0, bar.y + bar.height); // Bottom edge
+        ctx.lineTo(0, bar.y); // Left edge
+        ctx.closePath();
+        ctx.fill();
+      }
     });
   };
 
@@ -59,9 +77,12 @@ export const useParallaxBars = () => {
 
     // Update bar widths based on scroll progress
     barsRef.current.forEach((bar, index) => {
-      // Stagger the animation - each bar starts at a different progress point
-      const startProgress = index * 0.1;
-      const barProgress = Math.max(0, (progress - startProgress) / (1 - startProgress));
+      // Reverse stagger - bottom bars (higher index) start first, all reach full width
+      const totalBars = barsRef.current.length;
+      const reverseIndex = totalBars - 1 - index; // Flip the order
+      const startProgress = reverseIndex * 0.08;
+      const endProgress = 0.85; // All bars complete by 85% of scroll progress
+      const barProgress = Math.max(0, Math.min(1, (progress - startProgress) / (endProgress - startProgress)));
       
       // Ease the progress for smoother animation
       const easedProgress = gsap.parseEase("power2.out")(Math.min(1, barProgress));

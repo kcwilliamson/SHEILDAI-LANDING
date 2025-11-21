@@ -36,13 +36,13 @@ export default function Home() {
       });
     };
 
-    // Time-based animation that switches every 7 minutes
+    // Time-based animation that switches every 6 seconds
     const createTimedAnimation = () => {
       const switchStates = () => {
         const transformTimeline = gsap.timeline({
           onComplete: () => {
-            // Schedule next switch in 7 minutes (420 seconds)
-            gsap.delayedCall(420, switchStates);
+            // Schedule next switch in 6 seconds
+            gsap.delayedCall(6, switchStates);
           }
         });
         
@@ -50,7 +50,7 @@ export default function Home() {
           // Transform to colorful - text and animation perfectly synchronized
           transformTimeline
             .to("#main-text", {
-              duration: 0.8,
+              duration: 0.6,
               opacity: 0,
               ease: "power2.out"
             })
@@ -62,7 +62,7 @@ export default function Home() {
               });
             })
             .to("#main-text", {
-              duration: 1,
+              duration: 0.8,
               opacity: 1,
               ease: "power2.out"
             });
@@ -72,7 +72,7 @@ export default function Home() {
           // Transform back to grey - text and animation perfectly synchronized
           transformTimeline
             .to("#main-text", {
-              duration: 0.8,
+              duration: 0.6,
               opacity: 0,
               ease: "power2.out"
             })
@@ -84,7 +84,7 @@ export default function Home() {
               });
             })
             .to("#main-text", {
-              duration: 1,
+              duration: 0.8,
               opacity: 1,
               ease: "power2.out"
             });
@@ -93,97 +93,45 @@ export default function Home() {
         }
       };
       
-      // Start the first switch after 7 minutes (420 seconds)
-      gsap.delayedCall(420, switchStates);
+      // Start the first switch after 6 seconds
+      gsap.delayedCall(6, switchStates);
     };
 
     // Initialize the page
     initializeShapes();
     createTimedAnimation();
+    
+    // Set initial state for ant section
+    gsap.set(".ant-section", { y: "20%", opacity: 0.8 });
 
-    // Float colorful shapes into content section
+    
+    // Ant animation triggers after all bars complete
     ScrollTrigger.create({
       trigger: ".content-section",
-      start: "top center",
+      start: "bottom top+=50px",
       onEnter: () => {
-        // Create floating colorful shapes in the second section
-        const floatingCanvas = document.getElementById('floating-shapes-canvas') as HTMLCanvasElement;
-        if (floatingCanvas && isColorfulRef.current) {
-          const ctx = floatingCanvas.getContext('2d');
-          if (ctx) {
-            // Set canvas size
-            floatingCanvas.width = window.innerWidth;
-            floatingCanvas.height = window.innerHeight;
-            
-            // Animate colorful shapes floating down from the first section
-            const floatingShapes = Array.from({length: 8}, (_, i) => ({
-              x: Math.random() * floatingCanvas.width,
-              y: -50 - Math.random() * 100, // Start above the canvas
-              vx: (Math.random() - 0.5) * 2,
-              vy: 1 + Math.random() * 2, // Float downward
-              size: 8 + Math.random() * 12,
-              color: ['#E91E63', '#9C27B0', '#673AB7', '#3F51B5', '#2196F3'][Math.floor(Math.random() * 5)]
-            }));
-            
-            const animateFloatingShapes = () => {
-              ctx.clearRect(0, 0, floatingCanvas.width, floatingCanvas.height);
-              
-              floatingShapes.forEach(shape => {
-                shape.x += shape.vx;
-                shape.y += shape.vy;
-                
-                // Wrap around horizontally
-                if (shape.x < 0) shape.x = floatingCanvas.width;
-                if (shape.x > floatingCanvas.width) shape.x = 0;
-                
-                // Reset when reaching bottom
-                if (shape.y > floatingCanvas.height + 50) {
-                  shape.y = -50;
-                  shape.x = Math.random() * floatingCanvas.width;
-                }
-                
-                // Draw shape
-                ctx.fillStyle = shape.color;
-                ctx.beginPath();
-                ctx.arc(shape.x, shape.y, shape.size, 0, Math.PI * 2);
-                ctx.fill();
-              });
-              
-              requestAnimationFrame(animateFloatingShapes);
-            };
-            
-            animateFloatingShapes();
-          }
-        }
-      }
-    });
-    
-    // Ant animation triggers with staged timing
-    ScrollTrigger.create({
-      trigger: ".ant-section",
-      start: "top center",
-      onEnter: () => {
-        startSingleAnt();
-        // Show first text immediately
-        gsap.to(".first-text", {
-          duration: 1,
+        // Animate ant section into view
+        gsap.to(".ant-section", {
+          duration: 1.5,
+          y: "0%",
           opacity: 1,
-          y: 0,
           ease: "power2.out"
         });
-        // Wait 5 seconds, then add more ants and show second text
-        gsap.delayedCall(5, () => {
-          addAntsFromOffScreen(5);
-          gsap.to(".second-text", {
-            duration: 1.5,
-            opacity: 1,
-            y: 0,
-            ease: "power2.out"
-          });
+        
+        startSingleAnt();
+        // Continue adding ants gradually (text is already visible)
+        gsap.delayedCall(2, () => addAntsFromOffScreen(5));
+        gsap.delayedCall(5, () => addAntsFromOffScreen(8));
+        gsap.delayedCall(8, () => addAntsFromOffScreen(10));
+      },
+      onLeaveBack: () => {
+        // Reset ant section position when scrolling back up
+        gsap.to(".ant-section", {
+          duration: 1,
+          y: "20%",
+          opacity: 0.8,
+          ease: "power2.out"
         });
-        // Continue adding ants gradually
-        gsap.delayedCall(8, () => addAntsFromOffScreen(8));
-        gsap.delayedCall(12, () => addAntsFromOffScreen(10));
       }
     });
 
@@ -276,45 +224,31 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Section 2: Your content fuels AI */}
-      <section className="content-section relative min-h-screen pt-24">
-        {/* Floating colorful shapes canvas */}
-        <canvas 
-          id="floating-shapes-canvas"
-          className="absolute inset-0 w-full h-full z-1"
-        />
+      {/* Section 2: Parallax Bars */}
+      <section className="content-section relative" style={{ height: '50vh' }}>
         <canvas 
           ref={parallaxCanvasRef}
-          className="absolute inset-0 w-full h-full z-5"
-          style={{ opacity: 0.8 }}
+          className="absolute inset-0 w-full h-full"
         />
       </section>
 
       {/* Section 3: Think of AI like ants */}
-      <section className="ant-section relative min-h-screen" style={{backgroundColor: '#8B5CF6'}}>
-        <canvas 
-          ref={antCanvasRef}
-          className="absolute inset-0 w-full h-full"
-        />
+      <section className="ant-section relative" style={{backgroundColor: '#000000', height: '70vh', marginTop: 0}}>
         <div className="relative z-10 h-full flex items-center justify-center px-6">
-          <div className="grid grid-cols-12 w-full">
-            <div className="col-start-4 col-span-6 flex flex-col items-center justify-center">
-              <div className="first-text opacity-0 translate-y-8 text-center">
-                <h2 className="font-bold text-white mb-8 leading-[0.85] p-6" style={{fontSize: '60px'}}>
-                  Think of AI like ants
-                </h2>
-                <p className="text-3xl md:text-4xl lg:text-5xl text-white/90 mb-12 leading-tight p-6">
-                  no single ant is a genius
-                </p>
-              </div>
-              
-              <div className="second-text opacity-0 translate-y-8 mt-16 text-center">
-                <p className="text-2xl md:text-3xl text-white leading-relaxed p-6">
-                  but together, through simple rules and constant interaction, they build 
-                  complex tunnels, find food, and achieve incredible feats. AI is developing 
-                  similar capabilities through multi-agent and swarm architectures.
-                </p>
-              </div>
+          <div className="bg-purple-600 rounded-3xl p-12 max-w-5xl mx-auto shadow-2xl" style={{backgroundColor: '#8B5CF6'}}>
+            <canvas 
+              ref={antCanvasRef}
+              className="absolute inset-0 w-full h-full rounded-3xl"
+            />
+            <div className="relative z-20 text-center">
+              <h2 className="font-bold text-white mb-8 leading-[0.85]" style={{fontSize: '48px'}}>
+                Think of AI like ants
+              </h2>
+              <p className="text-white text-lg leading-relaxed max-w-3xl mx-auto">
+                No single ant is a genius, but together they create complex systems, 
+                build intricate colonies, and solve problems that would be impossible 
+                for any individual ant to tackle alone.
+              </p>
             </div>
           </div>
         </div>
