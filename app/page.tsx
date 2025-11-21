@@ -97,6 +97,27 @@ export default function Home() {
           }
         }
       });
+
+      // Fade animation to grey when reaching "In this model, you lose" section
+      ScrollTrigger.create({
+        trigger: "#lose-section",
+        start: "top center",
+        onEnter: () => {
+          if (isColorfulRef.current) {
+            // Gradually transform shapes back to grey
+            transformToGrey();
+            isColorfulRef.current = false;
+          }
+        },
+        onLeaveBack: () => {
+          if (!isColorfulRef.current) {
+            // Return to colorful when scrolling back up
+            transformToColorful();
+            continueShapesInBackground();
+            isColorfulRef.current = true;
+          }
+        }
+      });
     };
 
     // Initialize the page
@@ -350,7 +371,7 @@ export default function Home() {
       </section>
 
       {/* Section 4: Content Protection Options */}
-      <section id="protection-section" className="relative min-h-screen bg-gray-50 flex flex-col items-center justify-center px-6 py-20">
+      <section id="protection-section" className="relative min-h-screen bg-white flex flex-col items-center justify-center px-6 py-20">
         <div className="max-w-7xl mx-auto">
           <h2 className="font-bold text-black text-center mb-16 leading-tight" style={{fontSize: '56px'}}>
             It's not too late to protect your content
