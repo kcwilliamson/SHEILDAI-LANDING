@@ -113,21 +113,28 @@ export default function Home() {
         gsap.delayedCall(3, () => addAntsFromOffScreen(5));
         gsap.delayedCall(5, () => addAntsFromOffScreen(8));
         gsap.delayedCall(7, () => addAntsFromOffScreen(12));
+        
+        // Start automatic box movement after a delay (when ants have accumulated)
+        gsap.delayedCall(8, () => {
+          gsap.to("#ant-container", {
+            duration: 10,
+            x: -600,
+            ease: "power2.out"
+          });
+        });
       }
     });
 
-    // Scroll-triggered box pushing animation - starts after bars are completely gone
+    // Reset box position when scrolling back up
     ScrollTrigger.create({
       trigger: ".ant-section",
-      start: "60% center",
+      start: "top center",
       end: "bottom top",
-      scrub: 2,
-      onUpdate: (self) => {
-        const progress = self.progress;
-        // Move the container to the left as user scrolls (ants pushing effect)
-        const pushDistance = progress * 600; // Push 600px to the left
-        gsap.set("#ant-container", {
-          x: -pushDistance,
+      onLeaveBack: () => {
+        // Reset box to original position when scrolling back up
+        gsap.to("#ant-container", {
+          duration: 2,
+          x: 0,
           ease: "power2.out"
         });
       }
@@ -223,7 +230,7 @@ export default function Home() {
       </section>
 
       {/* Section 2: Think of AI like ants */}
-      <section className="ant-section relative" style={{backgroundColor: '#000000', height: '100vh', marginTop: 0}}>
+      <section className="ant-section relative" style={{backgroundColor: '#000000', height: '80vh', marginTop: 0}}>
         {/* Bars canvas that reveals the ant box */}
         <canvas 
           ref={parallaxCanvasRef}
@@ -246,11 +253,17 @@ export default function Home() {
                   <h2 className="font-bold text-white mb-6 leading-[0.85] p-4" style={{fontSize: '48px'}}>
                     Think of AI like ants
                   </h2>
-                  <div className="max-w-4xl">
+                  <div className="max-w-4xl space-y-4">
                     <p className="text-white text-lg leading-relaxed text-center max-w-[60ch] mx-auto">
                       No single ant is a genius, but together they create complex systems, 
                       build intricate colonies, and solve problems that would be impossible 
                       for any individual ant to tackle alone.
+                    </p>
+                    <p className="text-white text-lg leading-relaxed text-center max-w-[60ch] mx-auto">
+                      Just like an ant colony, AI is now leveraging multi-agent systems. Instead of one brain, 
+                      multiple, specialized AI agents collaborate, share data, and follow simple rules to solve 
+                      complex problems. This creates a "swarm intelligence" that dramatically boosts performance 
+                      and forms a powerful collective machine intelligence.
                     </p>
                   </div>
                 </div>

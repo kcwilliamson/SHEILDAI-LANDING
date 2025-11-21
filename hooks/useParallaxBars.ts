@@ -117,8 +117,8 @@ export const useParallaxBars = () => {
     ScrollTrigger.create({
       trigger: ".ant-section",
       start: "top bottom", // Start when ant section enters viewport
-      end: "center center", // Complete reveal by center of section
-      scrub: 5, // Even slower, more dampened scrubbing
+      end: "75% center", // Complete reveal by 75% through section (much slower)
+      scrub: 8, // Much slower, more dampened scrubbing
       onUpdate: (self) => {
         animateBars(self.progress);
       },
