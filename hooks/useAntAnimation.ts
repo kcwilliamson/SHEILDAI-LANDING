@@ -153,6 +153,41 @@ export const useAntAnimation = () => {
     backgroundColorRef.current = '#8B5CF6'; // Reset to purple
   };
 
+  const startSequentialAntAnimation = (onAllAntsMove: () => void) => {
+    // Clear any existing ants
+    antsRef.current = [];
+    
+    // Start with one ant crawling across
+    const firstAnt = createAnt(0);
+    antsRef.current = [firstAnt];
+    
+    // Add several more ants over time
+    gsap.delayedCall(1, () => {
+      addMoreAnts(3);
+    });
+    
+    gsap.delayedCall(2, () => {
+      addMoreAnts(5);
+    });
+    
+    // After 3 seconds, make all ants move left and trigger box movement
+    gsap.delayedCall(3, () => {
+      // Make all ants move left
+      antsRef.current.forEach((ant, index) => {
+        gsap.to(ant, {
+          duration: 2,
+          vx: -3 - Math.random() * 2, // Faster leftward movement
+          vy: (Math.random() - 0.5) * 0.5, // Small vertical variation
+          ease: "power2.out",
+          delay: index * 0.1 // Stagger the movement slightly
+        });
+      });
+      
+      // Trigger the box movement callback
+      onAllAntsMove();
+    });
+  };
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -198,6 +233,7 @@ export const useAntAnimation = () => {
     startSingleAnt,
     addMoreAnts,
     addAntsFromOffScreen,
-    resetToSingleAnt
+    resetToSingleAnt,
+    startSequentialAntAnimation
   };
 };

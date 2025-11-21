@@ -28,7 +28,7 @@ export const useShapesAnimation = () => {
 
   const colors = {
     grey: '#666666',
-    colorful: ['#8B5CF6', '#10B981', '#F59E0B', '#3B82F6', '#EF4444'] // purple, green, yellow, blue, red
+    colorful: ['#E80954', '#CCFF00', '#0764E5', '#F6821F', '#2DB35E', '#8D1EB1']
   };
 
   const createShape = (id: number): Shape => {
@@ -277,17 +277,32 @@ export const useShapesAnimation = () => {
   };
 
   const continueShapesInBackground = () => {
-    // Make shapes gradually flow downward to fill background
+    // Make shapes float energetically in all directions like creative people
     shapesRef.current.forEach((shape, index) => {
-      // Add downward drift with some horizontal movement
-      const horizontalVariation = (Math.random() - 0.5) * 0.4; // Small horizontal drift
-      const downwardSpeed = 0.3 + Math.random() * 0.2; // Consistent downward movement
+      // Random direction and speed - energetic but smooth
+      const angle = Math.random() * Math.PI * 2; // Any direction
+      const speed = 0.5 + Math.random() * 0.8; // More energetic movement
+      const vx = Math.cos(angle) * speed;
+      const vy = Math.sin(angle) * speed;
       
       gsap.to(shape, {
-        duration: 3 + Math.random() * 2, // Slower, more varied timing
-        vx: horizontalVariation,
-        vy: downwardSpeed, // Always moving down
-        ease: "power1.inOut"
+        duration: 2 + Math.random() * 3, // Varied timing for organic feel
+        vx: vx,
+        vy: vy,
+        ease: "power2.inOut",
+        onComplete: () => {
+          // Recursively continue the energetic movement
+          if (isColorfulRef.current) {
+            const newAngle = Math.random() * Math.PI * 2;
+            const newSpeed = 0.5 + Math.random() * 0.8;
+            gsap.to(shape, {
+              duration: 2 + Math.random() * 3,
+              vx: Math.cos(newAngle) * newSpeed,
+              vy: Math.sin(newAngle) * newSpeed,
+              ease: "power2.inOut"
+            });
+          }
+        }
       });
     });
   };

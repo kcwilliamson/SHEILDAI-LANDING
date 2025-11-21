@@ -10,7 +10,7 @@ export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isColorfulRef = useRef(false);
   const { canvasRef, transformToColorful, transformToGrey, turnGreyWithConnections, continueShapesInBackground, exitShapes } = useShapesAnimation();
-  const { canvasRef: antCanvasRef, startSingleAnt, addMoreAnts, addAntsFromOffScreen, resetToSingleAnt } = useAntAnimation();
+  const { canvasRef: antCanvasRef, startSingleAnt, addMoreAnts, addAntsFromOffScreen, resetToSingleAnt, startSequentialAntAnimation } = useAntAnimation();
 
   
   useEffect(() => {
@@ -39,7 +39,7 @@ export default function Home() {
       // Transform to colorful when scrolling down
       ScrollTrigger.create({
         trigger: "body",
-        start: "top top-=50",
+        start: "top top-=10",
         onEnter: () => {
           if (!isColorfulRef.current) {
             const transformTimeline = gsap.timeline();
@@ -101,7 +101,7 @@ export default function Home() {
       // Fade animation to grey when reaching "In this model, you lose" section
       ScrollTrigger.create({
         trigger: "#lose-section",
-        start: "top center",
+        start: "30% center",
         onEnter: () => {
           if (isColorfulRef.current) {
             // Gradually transform shapes back to grey
@@ -142,27 +142,32 @@ export default function Home() {
         });
       },
       onEnter: () => {
-        startSingleAnt();
-        // Continue adding ants gradually
-        gsap.delayedCall(1, () => addAntsFromOffScreen(3));
-        gsap.delayedCall(3, () => addAntsFromOffScreen(5));
-        gsap.delayedCall(5, () => addAntsFromOffScreen(8));
-        gsap.delayedCall(7, () => addAntsFromOffScreen(12));
+        // Start the sequential ant animation
+        startSequentialAntAnimation(() => {
+          // This callback triggers when all ants move left
+          // Start the box movement to the left
+          gsap.to("#ant-container", {
+            duration: 3,
+            x: -600,
+            ease: "power2.out"
+          });
+        });
       }
     });
 
-    // Ant box float out to left after center
+    // Reset box position when scrolling back up
     ScrollTrigger.create({
       trigger: ".ant-section",
-      start: "center center",
+      start: "top center",
       end: "bottom top",
-      scrub: 1,
-      onUpdate: (self) => {
-        const progress = self.progress;
-        // Float out to left (0 to -600px)
-        gsap.set("#ant-container", {
-          x: -progress * 600
+      onLeaveBack: () => {
+        // Reset box to original position when scrolling back up
+        gsap.to("#ant-container", {
+          duration: 2,
+          x: 0,
+          ease: "power2.out"
         });
+        resetToSingleAnt();
       }
     });
 
@@ -254,7 +259,7 @@ export default function Home() {
                 <h2 className="font-bold text-white mb-4 text-center leading-tight" style={{fontSize: '32px'}}>
                   Your content fuels AI
                 </h2>
-                <div className="space-y-3 text-base text-gray-200 leading-relaxed text-center max-w-[60ch] mx-auto p-5 bg-black/40 backdrop-blur-sm rounded-lg">
+                <div className="space-y-3 font-inter font-extrabold text-gray-200 leading-relaxed text-center max-w-[60ch] mx-auto p-5 bg-black/40 backdrop-blur-sm rounded-lg" style={{fontSize: '24px'}}>
                   <p>
                     Imagine all the photos, articles, videos, and code you and 
                     millions of others have ever created. Your unique, high-quality 
@@ -283,7 +288,7 @@ export default function Home() {
           <div 
             id="ant-container"
             className="bg-purple-600 shadow-2xl transition-transform duration-1000 ease-out"
-            style={{backgroundColor: '#8B5CF6', width: '70vh', height: '70vh', position: 'relative', borderRadius: '60px'}}
+            style={{backgroundColor: '#8D1EB1', width: '70vh', height: '70vh', position: 'relative', borderRadius: '60px'}}
           >
             <canvas 
               ref={antCanvasRef}
@@ -297,12 +302,12 @@ export default function Home() {
                     Think of AI like ants
                   </h2>
                   <div className="max-w-4xl space-y-4">
-                    <p className="text-white text-lg leading-relaxed text-center max-w-[60ch] mx-auto">
+                    <p className="text-white font-inter font-extrabold leading-relaxed text-center max-w-[60ch] mx-auto" style={{fontSize: '24px'}}>
                       No single ant is a genius, but together they create complex systems, 
                       build intricate colonies, and solve problems that would be impossible 
                       for any individual ant to tackle alone.
                     </p>
-                    <p className="text-white text-lg leading-relaxed text-center max-w-[60ch] mx-auto">
+                    <p className="text-white font-inter font-extrabold leading-relaxed text-center max-w-[60ch] mx-auto" style={{fontSize: '24px'}}>
                       Just like an ant colony, AI is now leveraging multi-agent systems. Instead of one brain, 
                       multiple, specialized AI agents collaborate, share data, and follow simple rules to solve 
                       complex problems. This creates a "swarm intelligence" that dramatically boosts performance 
@@ -324,7 +329,7 @@ export default function Home() {
               In this model, you lose
             </h2>
             <div className="max-w-4xl">
-              <p className="text-white text-xl leading-relaxed text-center max-w-[60ch] mx-auto">
+              <p className="text-white font-inter font-extrabold leading-relaxed text-center max-w-[60ch] mx-auto" style={{fontSize: '24px'}}>
                 Your <span 
                   className="highlight-phrase relative inline-block" 
                   data-highlight="orange"
