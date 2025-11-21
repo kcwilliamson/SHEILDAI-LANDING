@@ -10,22 +10,10 @@ import { useParallaxBars } from '../hooks/useParallaxBars';
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isColorfulRef = useRef(false);
-  const scrollLockedRef = useRef(false);
   const { canvasRef, transformToColorful, transformToGrey, turnGreyWithConnections, continueShapesInBackground, exitShapes } = useShapesAnimation();
   const { canvasRef: antCanvasRef, startSingleAnt, addMoreAnts, addAntsFromOffScreen, resetToSingleAnt } = useAntAnimation();
   const { canvasRef: parallaxCanvasRef } = useParallaxBars();
 
-  // Scroll control functions
-  const lockScroll = () => {
-    if (scrollLockedRef.current) return;
-    scrollLockedRef.current = true;
-    document.body.style.overflow = 'hidden';
-  };
-
-  const unlockScroll = () => {
-    scrollLockedRef.current = false;
-    document.body.style.overflow = '';
-  };
   
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -48,107 +36,125 @@ export default function Home() {
       });
     };
 
-    // Bidirectional scroll-triggered transformation with scroll lock
-    const createScrollAnimation = () => {
-      ScrollTrigger.create({
-        trigger: "#hero-section",
-        start: "top top-=100px",
-        end: "top top+=100px",
-        scrub: false,
-        onEnter: () => {
-          if (!isColorfulRef.current) {
-            // Lock scroll during transition to colorful
-            lockScroll();
-            
-            // Transform to colorful shapes on scroll down
-            const transformTimeline = gsap.timeline({
-              onComplete: () => {
-                // Unlock scroll when animation is complete
-                gsap.delayedCall(0.5, unlockScroll);
-              }
-            });
-            
-            transformTimeline
-              .to("#main-text", {
-                duration: 0.6,
-                opacity: 0,
-                ease: "power2.out"
-              })
-              .add(() => {
-                transformToColorful();
-                gsap.set("#main-text", {
-                  innerHTML: "It's<br/>Collective<br/>Intelligence"
-                });
-              })
-              .to("#main-text", {
-                duration: 0.8,
-                opacity: 1,
-                ease: "power2.out"
-              });
-            
-            isColorfulRef.current = true;
+    // Time-based animation that switches every 7 minutes
+    const createTimedAnimation = () => {
+      const switchStates = () => {
+        const transformTimeline = gsap.timeline({
+          onComplete: () => {
+            // Schedule next switch in 7 minutes (420 seconds)
+            gsap.delayedCall(420, switchStates);
           }
-        },
-        onLeaveBack: () => {
-          if (isColorfulRef.current) {
-            // Lock scroll during transition back to grey
-            lockScroll();
-            
-            // Transform back to grey shapes on scroll up
-            const revertTimeline = gsap.timeline({
-              onComplete: () => {
-                // Unlock scroll when animation is complete
-                gsap.delayedCall(0.5, unlockScroll);
-              }
-            });
-            
-            revertTimeline
-              .to("#main-text", {
-                duration: 0.6,
-                opacity: 0,
-                ease: "power2.out"
-              })
-              .add(() => {
-                transformToGrey();
-                gsap.set("#main-text", {
-                  innerHTML: "It's<br/>not Artificial<br/>Intelligence"
-                });
-              })
-              .to("#main-text", {
-                duration: 0.8,
-                opacity: 1,
-                ease: "power2.out"
+        });
+        
+        if (!isColorfulRef.current) {
+          // Transform to colorful - text and animation perfectly synchronized
+          transformTimeline
+            .to("#main-text", {
+              duration: 0.8,
+              opacity: 0,
+              ease: "power2.out"
+            })
+            .add(() => {
+              // Text and animation change simultaneously
+              transformToColorful();
+              gsap.set("#main-text", {
+                innerHTML: "It's<br/>Collective<br/>Intelligence"
               });
-            
-            isColorfulRef.current = false;
-          }
+            })
+            .to("#main-text", {
+              duration: 1,
+              opacity: 1,
+              ease: "power2.out"
+            });
+          
+          isColorfulRef.current = true;
+        } else {
+          // Transform back to grey - text and animation perfectly synchronized
+          transformTimeline
+            .to("#main-text", {
+              duration: 0.8,
+              opacity: 0,
+              ease: "power2.out"
+            })
+            .add(() => {
+              // Text and animation change simultaneously
+              transformToGrey();
+              gsap.set("#main-text", {
+                innerHTML: "It's<br/>not Artificial<br/>Intelligence"
+              });
+            })
+            .to("#main-text", {
+              duration: 1,
+              opacity: 1,
+              ease: "power2.out"
+            });
+          
+          isColorfulRef.current = false;
         }
-      });
+      };
+      
+      // Start the first switch after 7 minutes (420 seconds)
+      gsap.delayedCall(420, switchStates);
     };
 
     // Initialize the page
     initializeShapes();
-    createScrollAnimation();
+    createTimedAnimation();
 
-    // Continue shapes in content section with reduced opacity
+    // Float colorful shapes into content section
     ScrollTrigger.create({
       trigger: ".content-section",
       start: "top center",
       onEnter: () => {
-        // Continue shapes moving in background
-        continueShapesInBackground();
-        gsap.to("#shapes-canvas", {
-          duration: 1,
-          opacity: 0.2,
-          ease: "power2.out"
-        });
-      },
-      onLeaveBack: () => {
-        gsap.to("#shapes-canvas", {
-          duration: 1,
-          opacity: 1,
-          ease: "power2.out"
-        });
+        // Create floating colorful shapes in the second section
+        const floatingCanvas = document.getElementById('floating-shapes-canvas') as HTMLCanvasElement;
+        if (floatingCanvas && isColorfulRef.current) {
+          const ctx = floatingCanvas.getContext('2d');
+          if (ctx) {
+            // Set canvas size
+            floatingCanvas.width = window.innerWidth;
+            floatingCanvas.height = window.innerHeight;
+            
+            // Animate colorful shapes floating down from the first section
+            const floatingShapes = Array.from({length: 8}, (_, i) => ({
+              x: Math.random() * floatingCanvas.width,
+              y: -50 - Math.random() * 100, // Start above the canvas
+              vx: (Math.random() - 0.5) * 2,
+              vy: 1 + Math.random() * 2, // Float downward
+              size: 8 + Math.random() * 12,
+              color: ['#E91E63', '#9C27B0', '#673AB7', '#3F51B5', '#2196F3'][Math.floor(Math.random() * 5)]
+            }));
+            
+            const animateFloatingShapes = () => {
+              ctx.clearRect(0, 0, floatingCanvas.width, floatingCanvas.height);
+              
+              floatingShapes.forEach(shape => {
+                shape.x += shape.vx;
+                shape.y += shape.vy;
+                
+                // Wrap around horizontally
+                if (shape.x < 0) shape.x = floatingCanvas.width;
+                if (shape.x > floatingCanvas.width) shape.x = 0;
+                
+                // Reset when reaching bottom
+                if (shape.y > floatingCanvas.height + 50) {
+                  shape.y = -50;
+                  shape.x = Math.random() * floatingCanvas.width;
+                }
+                
+                // Draw shape
+                ctx.fillStyle = shape.color;
+                ctx.beginPath();
+                ctx.arc(shape.x, shape.y, shape.size, 0, Math.PI * 2);
+                ctx.fill();
+              });
+              
+              requestAnimationFrame(animateFloatingShapes);
+            };
+            
+            animateFloatingShapes();
+          }
+        }
       }
     });
     
@@ -183,8 +189,6 @@ export default function Home() {
 
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-      // Cleanup scroll lock on unmount
-      document.body.style.overflow = '';
     };
   }, [transformToColorful, transformToGrey, continueShapesInBackground, exitShapes, startSingleAnt, addMoreAnts, addAntsFromOffScreen, resetToSingleAnt]);
 
@@ -225,7 +229,7 @@ export default function Home() {
       </header>
 
       {/* Section 1: Transforming Shapes */}
-      <section id="hero-section" className="relative min-h-screen overflow-hidden">
+      <section id="hero-section" className="relative overflow-hidden" style={{minHeight: '90vh'}}>
         <canvas 
           ref={canvasRef}
           id="shapes-canvas" 
@@ -233,16 +237,40 @@ export default function Home() {
         />
         <div className="relative z-10 h-full flex items-center justify-center">
           <div className="grid grid-cols-12 w-full">
-            <div className="col-start-4 col-span-6 text-center flex flex-col items-center justify-center">
+            <div className="col-start-3 col-span-8 text-center flex flex-col items-center justify-center">
               <h1 
                 id="main-text"
-                className="font-bold text-white leading-[0.8] p-6"
-                style={{fontSize: '100px'}}
+                className="font-bold text-white leading-[0.8] p-4 mb-6"
+                style={{fontSize: '85px'}}
               >
                 It&apos;s not<br />
                 Artificial<br />
                 Intelligence
               </h1>
+              
+              {/* Content below main text */}
+              <div className="mt-4 max-w-4xl">
+                <h2 className="font-bold text-white mb-4 text-center leading-tight" style={{fontSize: '32px'}}>
+                  Your content fuels AI
+                </h2>
+                <div className="space-y-3 text-base text-gray-200 leading-relaxed text-center max-w-[60ch] mx-auto p-5 bg-black/40 backdrop-blur-sm rounded-lg">
+                  <p>
+                    Imagine all the photos, articles, videos, and code you and 
+                    millions of others have ever created. Your unique, high-quality 
+                    work isn&apos;t just viewed by people—it&apos;s being analyzed and 
+                    absorbed by modern AI systems.
+                  </p>
+                  <p className="font-semibold text-white">
+                    Essentially, your content is the fuel for Generative AI.
+                  </p>
+                  <p>
+                    These systems look at the vast collection of human creativity to 
+                    learn the fundamental rules of style, language, and structure, 
+                    allowing the AI to then create its own intelligent content and 
+                    improve the collective knowledge base.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -250,36 +278,16 @@ export default function Home() {
 
       {/* Section 2: Your content fuels AI */}
       <section className="content-section relative min-h-screen pt-24">
+        {/* Floating colorful shapes canvas */}
+        <canvas 
+          id="floating-shapes-canvas"
+          className="absolute inset-0 w-full h-full z-1"
+        />
         <canvas 
           ref={parallaxCanvasRef}
-          className="absolute inset-0 w-full h-full z-0"
+          className="absolute inset-0 w-full h-full z-5"
+          style={{ opacity: 0.8 }}
         />
-        <div className="relative z-10 h-full flex items-center justify-center px-6">
-          <div className="grid grid-cols-12 w-full">
-            <div className="col-start-4 col-span-6 flex flex-col items-center justify-center">
-              <h2 className="font-bold text-white mb-12 text-center leading-tight p-6" style={{fontSize: '60px'}}>
-                Your content fuels AI
-              </h2>
-              <div className="space-y-6 text-lg md:text-xl text-gray-300 leading-relaxed text-center max-w-[65ch] mx-auto p-6 bg-black/30 backdrop-blur-sm rounded-lg">
-                <p>
-                  Imagine all the photos, articles, videos, and code you and 
-                  millions of others have ever created. Your unique, high-quality 
-                  work isn&apos;t just viewed by people—it&apos;s being analyzed and 
-                  absorbed by modern AI systems.
-                </p>
-                <p className="font-semibold text-white">
-                  Essentially, your content is the fuel for Generative AI.
-                </p>
-                <p>
-                  These systems look at the vast collection of human creativity to 
-                  learn the fundamental rules of style, language, and structure, 
-                  allowing the AI to then create its own intelligent content and 
-                  improve the collective knowledge base.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
       </section>
 
       {/* Section 3: Think of AI like ants */}
