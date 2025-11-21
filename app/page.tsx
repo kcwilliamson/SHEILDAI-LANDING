@@ -140,6 +140,25 @@ export default function Home() {
       }
     });
 
+    // Protection pills animation
+    ScrollTrigger.create({
+      trigger: "#protection-section",
+      start: "top center",
+      onEnter: () => {
+        const pills = document.querySelectorAll('.protection-pill');
+        
+        // Animate each pill moving up with 3-second delays
+        pills.forEach((pill, index) => {
+          gsap.to(pill, {
+            duration: 0.8,
+            y: 0,
+            opacity: 1,
+            ease: "power2.out",
+            delay: index * 3 // 3 seconds between each pill
+          });
+        });
+      }
+    });
 
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
@@ -275,14 +294,14 @@ export default function Home() {
       </section>
 
       {/* Section 3: In this model, you lose */}
-      <section id="lose-section" className="relative min-h-screen bg-black flex items-center justify-center px-6">
+      <section id="lose-section" className="relative min-h-screen bg-white flex items-center justify-center px-6">
         <div className="grid grid-cols-12 w-full">
           <div className="col-start-3 col-span-8 text-center flex flex-col items-center justify-center">
-            <h2 className="font-bold text-white mb-12 leading-[0.9] p-4" style={{fontSize: '72px'}}>
+            <h2 className="font-bold text-black mb-12 leading-[0.9] p-4" style={{fontSize: '72px'}}>
               In this model, you lose
             </h2>
             <div className="max-w-4xl">
-              <p className="text-white text-xl leading-relaxed text-center max-w-[60ch] mx-auto">
+              <p className="text-black text-xl leading-relaxed text-center max-w-[60ch] mx-auto">
                 Your <span 
                   className="highlight-phrase relative inline-block" 
                   data-highlight="orange"
@@ -324,6 +343,66 @@ export default function Home() {
                 bypasses your platform and effectively breaks your traditional monetization stream.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 4: Content Protection Options */}
+      <section id="protection-section" className="relative min-h-screen bg-gray-50 flex flex-col items-center justify-center px-6 py-20">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="font-bold text-black text-center mb-16 leading-tight" style={{fontSize: '56px'}}>
+            It's not too late to protect your content
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            {/* Block Pill */}
+            <div 
+              className="protection-pill bg-pink-500 text-white p-8 rounded-3xl shadow-lg"
+              style={{transform: 'translateY(0px)', opacity: 1}}
+            >
+              <div className="text-center mb-6">
+                <h3 className="text-4xl font-bold mb-4">Block</h3>
+                <div className="text-6xl font-bold">✕</div>
+              </div>
+              <p className="text-white text-sm leading-relaxed">
+                Cloudflare's AI Crawl Control integrates seamlessly with Bot Management and your WAF (Web Application Firewall): simply block bots like GPTBot or ClaudeBot, and the Cloudflare dashboard will confirm your refusal by showing an increase in $4xx$ status codes (like $403$ or $402$), verifying that your content is protected.
+              </p>
+            </div>
+
+            {/* Allow Pill */}
+            <div 
+              className="protection-pill bg-blue-500 text-white p-8 rounded-3xl shadow-lg"
+              style={{transform: 'translateY(0px)', opacity: 1}}
+            >
+              <div className="text-center mb-6">
+                <h3 className="text-4xl font-bold mb-4">Allow</h3>
+                <div className="text-6xl font-bold">✓</div>
+              </div>
+              <p className="text-white text-sm leading-relaxed">
+                When you Allow an AI agent via AI Crawl Control, the Bot Management system provides detailed tracking: the Metrics tab displays their successful requests (with $2xx$ status codes), and the Most popular paths table reveals exactly which of your pages these allowed AI agents value most.
+              </p>
+            </div>
+
+            {/* Charge Pill */}
+            <div 
+              className="protection-pill bg-green-500 text-white p-8 rounded-3xl shadow-lg"
+              style={{transform: 'translateY(0px)', opacity: 1}}
+            >
+              <div className="text-center mb-6">
+                <h3 className="text-4xl font-bold mb-4">Charge</h3>
+                <div className="text-6xl font-bold">$</div>
+              </div>
+              <p className="text-white text-sm leading-relaxed">
+                Enable the Charge rule through the Pay Per Crawl feature in AI Crawl Control, which uses Bot Management for accurate identification. The system enforces your pricing policy by signaling a $402$ Payment Required status, correctly logging every monetized request for subsequent billing and payout.
+              </p>
+            </div>
+          </div>
+
+          <div className="text-center">
+            <h3 className="text-4xl font-bold text-black mb-8">Get started today</h3>
+            <button className="bg-orange-500 text-white px-12 py-4 rounded-full text-xl font-semibold hover:bg-orange-600 transition-colors duration-200">
+              Contact Cloudflare
+            </button>
           </div>
         </div>
       </section>
