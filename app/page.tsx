@@ -136,16 +136,16 @@ export default function Home() {
       }
     });
 
-    // Scroll-triggered box pushing animation
+    // Scroll-triggered box pushing animation - starts at 75% down the section
     ScrollTrigger.create({
       trigger: ".ant-section",
-      start: "top center",
+      start: "75% center",
       end: "bottom top",
       scrub: 2,
       onUpdate: (self) => {
         const progress = self.progress;
         // Move the container to the left as user scrolls (ants pushing effect)
-        const pushDistance = progress * 600; // Push 600px to the left
+        const pushDistance = progress * 800; // Push 800px to the left for larger container
         gsap.set("#ant-container", {
           x: -pushDistance,
           ease: "power2.out"
@@ -251,25 +251,52 @@ export default function Home() {
       </section>
 
       {/* Section 3: Think of AI like ants */}
-      <section className="ant-section relative" style={{backgroundColor: '#000000', height: '70vh', marginTop: 0}}>
-        <div className="relative z-10 h-full flex items-center justify-center px-6 overflow-hidden">
+      <section className="ant-section relative" style={{backgroundColor: '#000000', minHeight: '100vh', marginTop: 0}}>
+        <div className="relative z-10 h-full flex items-center justify-center p-6 overflow-hidden">
           <div 
             id="ant-container"
-            className="bg-purple-600 rounded-3xl p-12 shadow-2xl transition-transform duration-1000 ease-out"
-            style={{backgroundColor: '#8B5CF6', width: '800px', position: 'relative'}}
+            className="bg-purple-600 shadow-2xl transition-transform duration-1000 ease-out"
+            style={{backgroundColor: '#8B5CF6', width: '90vw', height: '80vh', maxWidth: '1400px', position: 'relative', borderRadius: '60px'}}
           >
             <canvas 
               ref={antCanvasRef}
-              className="absolute inset-0 w-full h-full rounded-3xl"
+              className="absolute inset-0 w-full h-full"
+              style={{borderRadius: '60px'}}
             />
-            <div className="relative z-20 text-center">
-              <h2 className="font-bold text-white mb-8 leading-[0.85]" style={{fontSize: '48px'}}>
-                Think of AI like ants
-              </h2>
-              <p className="text-white text-lg leading-relaxed">
-                No single ant is a genius, but together they create complex systems, 
-                build intricate colonies, and solve problems that would be impossible 
-                for any individual ant to tackle alone.
+            <div className="relative z-20 h-full flex items-center justify-center px-6">
+              <div className="grid grid-cols-12 w-full">
+                <div className="col-start-3 col-span-8 text-center flex flex-col items-center justify-center">
+                  <h2 className="font-bold text-white mb-8 leading-[0.85] p-4" style={{fontSize: '64px'}}>
+                    Think of AI like ants
+                  </h2>
+                  <div className="max-w-4xl">
+                    <p className="text-white text-xl leading-relaxed text-center max-w-[60ch] mx-auto">
+                      No single ant is a genius, but together they create complex systems, 
+                      build intricate colonies, and solve problems that would be impossible 
+                      for any individual ant to tackle alone.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 4: In this model, you lose */}
+      <section className="relative min-h-screen bg-black flex items-center justify-center px-6">
+        <div className="grid grid-cols-12 w-full">
+          <div className="col-start-3 col-span-8 text-center flex flex-col items-center justify-center">
+            <h2 className="font-bold text-white mb-12 leading-[0.9] p-4" style={{fontSize: '72px'}}>
+              In this model, you lose
+            </h2>
+            <div className="max-w-4xl">
+              <p className="text-white text-xl leading-relaxed text-center max-w-[60ch] mx-auto">
+                Your original content fundamentally enables modern AI by serving as the massive training 
+                data set from which systems learn human creativity and style. The core issue is that your 
+                work is being scraped and used commercially to build these AI models without granting you 
+                credit, attribution, or direct payment, allowing the AI to generate competing content that 
+                bypasses your platform and effectively breaks your traditional monetization stream.
               </p>
             </div>
           </div>

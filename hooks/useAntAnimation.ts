@@ -27,11 +27,11 @@ export const useAntAnimation = () => {
     if (!canvas) throw new Error('Canvas not found');
 
     return {
-      x: canvas.width * 0.6 + Math.random() * (canvas.width * 0.3), // Start from right side
-      y: canvas.height * 0.3 + Math.random() * (canvas.height * 0.4), // Middle vertical area
-      vx: -0.8 - Math.random() * 0.4, // Always move left
-      vy: (Math.random() - 0.5) * 0.5, // Slower vertical movement
-      size: 30 + Math.random() * 10, // Ant size 30-40px
+      x: canvas.width * 0.7 + Math.random() * (canvas.width * 0.25), // Start from right side of larger canvas
+      y: canvas.height * 0.2 + Math.random() * (canvas.height * 0.6), // Spread across more vertical area
+      vx: -1.5 - Math.random() * 0.8, // Faster leftward movement for larger space
+      vy: (Math.random() - 0.5) * 0.8, // Slightly more vertical movement
+      size: 40 + Math.random() * 20, // Larger ants for bigger canvas (40-60px)
       rotation: Math.random() * Math.PI * 2,
       id
     };
@@ -78,15 +78,19 @@ export const useAntAnimation = () => {
       ant.rotation = Math.atan2(ant.vy, ant.vx);
 
       // Stack behavior: when ants reach the left edge, they stack up
-      if (ant.x <= 30) {
-        ant.x = 30; // Stop at left edge
+      if (ant.x <= 60) {
+        ant.x = 60; // Stop at left edge (more space for larger canvas)
         ant.vx = 0; // Stop horizontal movement
         ant.vy *= 0.9; // Gradually slow down vertical movement
         
-        // Stack ants on top of each other
-        const stackHeight = 40;
-        const antsAtEdge = antsRef.current.filter(a => a.x <= 35).length;
-        ant.y = canvas.height * 0.7 - (antsAtEdge * stackHeight * 0.3);
+        // Stack ants more densely for pushing effect
+        const stackHeight = 50;
+        const antsAtEdge = antsRef.current.filter(a => a.x <= 70).length;
+        const stackLayers = Math.floor(antsAtEdge / 8) + 1; // Create layers
+        const positionInLayer = antsAtEdge % 8;
+        
+        ant.x = 60 + (positionInLayer * 15); // Spread ants horizontally in stack
+        ant.y = canvas.height * 0.8 - (stackLayers * stackHeight * 0.6);
       }
 
       // Bounce off top/bottom edges only
