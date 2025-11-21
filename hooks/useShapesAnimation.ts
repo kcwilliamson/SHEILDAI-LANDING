@@ -179,8 +179,12 @@ export const useShapesAnimation = () => {
         // Wrap around edges for colorful state
         if (shape.x > canvas.width + shape.size) shape.x = -shape.size;
         if (shape.x < -shape.size) shape.x = canvas.width + shape.size;
-        if (shape.y > canvas.height + shape.size) shape.y = -shape.size;
-        if (shape.y < -shape.size) shape.y = canvas.height + shape.size;
+        // For vertical wrapping, only wrap from bottom to top (downward flow)
+        if (shape.y > canvas.height + shape.size) {
+          shape.y = -shape.size;
+          shape.x = Math.random() * canvas.width; // Randomize horizontal position when wrapping
+        }
+        if (shape.y < -shape.size * 2) shape.y = -shape.size; // Prevent going too high up
       }
     });
 
@@ -273,16 +277,17 @@ export const useShapesAnimation = () => {
   };
 
   const continueShapesInBackground = () => {
-    // Keep shapes moving but more subtly in the background
+    // Make shapes gradually flow downward to fill background
     shapesRef.current.forEach((shape, index) => {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = 0.2 + Math.random() * 0.3; // Slower movement
+      // Add downward drift with some horizontal movement
+      const horizontalVariation = (Math.random() - 0.5) * 0.4; // Small horizontal drift
+      const downwardSpeed = 0.3 + Math.random() * 0.2; // Consistent downward movement
       
       gsap.to(shape, {
-        duration: 2,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        ease: "power2.out"
+        duration: 3 + Math.random() * 2, // Slower, more varied timing
+        vx: horizontalVariation,
+        vy: downwardSpeed, // Always moving down
+        ease: "power1.inOut"
       });
     });
   };

@@ -5,14 +5,12 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useShapesAnimation } from '../hooks/useShapesAnimation';
 import { useAntAnimation } from '../hooks/useAntAnimation';
-import { useParallaxBars } from '../hooks/useParallaxBars';
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isColorfulRef = useRef(false);
   const { canvasRef, transformToColorful, transformToGrey, turnGreyWithConnections, continueShapesInBackground, exitShapes } = useShapesAnimation();
   const { canvasRef: antCanvasRef, startSingleAnt, addMoreAnts, addAntsFromOffScreen, resetToSingleAnt } = useAntAnimation();
-  const { canvasRef: parallaxCanvasRef } = useParallaxBars();
 
   
   useEffect(() => {
@@ -26,7 +24,7 @@ export default function Home() {
       // Set initial text after shapes are settled
       gsap.delayedCall(1.5, () => {
         gsap.set("#main-text", {
-          innerHTML: "It's<br/>Not Artificial<br/>Intellegence"
+          innerHTML: "It's<br/>not Artificial<br/>Intelligence"
         });
         gsap.to("#main-text", {
           duration: 0.3,
@@ -36,106 +34,113 @@ export default function Home() {
       });
     };
 
-    // Time-based animation that switches every 6 seconds
-    const createTimedAnimation = () => {
-      const switchStates = () => {
-        const transformTimeline = gsap.timeline({
-          onComplete: () => {
-            // Schedule next switch in 6 seconds
-            gsap.delayedCall(6, switchStates);
+    // Scroll-triggered animation system
+    const createScrollTriggeredAnimation = () => {
+      // Transform to colorful when scrolling down
+      ScrollTrigger.create({
+        trigger: "body",
+        start: "top top-=50",
+        onEnter: () => {
+          if (!isColorfulRef.current) {
+            const transformTimeline = gsap.timeline();
+            
+            // Transform to colorful - text and animation perfectly synchronized
+            transformTimeline
+              .to("#main-text", {
+                duration: 0.6,
+                opacity: 0,
+                ease: "power2.out"
+              })
+              .add(() => {
+                // Text and animation change simultaneously
+                transformToColorful();
+                // Make shapes continue in background for sections 1, 2, 3
+                continueShapesInBackground();
+                gsap.set("#main-text", {
+                  innerHTML: "It's<br/>Collective<br/>Intelligence"
+                });
+              })
+              .to("#main-text", {
+                duration: 0.8,
+                opacity: 1,
+                ease: "power2.out"
+              });
+            
+            isColorfulRef.current = true;
           }
-        });
-        
-        if (!isColorfulRef.current) {
-          // Transform to colorful - text and animation perfectly synchronized
-          transformTimeline
-            .to("#main-text", {
-              duration: 0.6,
-              opacity: 0,
-              ease: "power2.out"
-            })
-            .add(() => {
-              // Text and animation change simultaneously
-              transformToColorful();
-              gsap.set("#main-text", {
-                innerHTML: "It's<br/>Collective<br/>Intellegence"
+        },
+        onLeaveBack: () => {
+          if (isColorfulRef.current) {
+            const transformTimeline = gsap.timeline();
+            
+            // Transform back to grey - text and animation perfectly synchronized
+            transformTimeline
+              .to("#main-text", {
+                duration: 0.6,
+                opacity: 0,
+                ease: "power2.out"
+              })
+              .add(() => {
+                // Text and animation change simultaneously
+                transformToGrey();
+                gsap.set("#main-text", {
+                  innerHTML: "It's<br/>not Artificial<br/>Intelligence"
+                });
+              })
+              .to("#main-text", {
+                duration: 0.8,
+                opacity: 1,
+                ease: "power2.out"
               });
-            })
-            .to("#main-text", {
-              duration: 0.8,
-              opacity: 1,
-              ease: "power2.out"
-            });
-          
-          isColorfulRef.current = true;
-        } else {
-          // Transform back to grey - text and animation perfectly synchronized
-          transformTimeline
-            .to("#main-text", {
-              duration: 0.6,
-              opacity: 0,
-              ease: "power2.out"
-            })
-            .add(() => {
-              // Text and animation change simultaneously
-              transformToGrey();
-              gsap.set("#main-text", {
-                innerHTML: "It's<br/>Not Artificial<br/>Intellegence"
-              });
-            })
-            .to("#main-text", {
-              duration: 0.8,
-              opacity: 1,
-              ease: "power2.out"
-            });
-          
-          isColorfulRef.current = false;
+            
+            isColorfulRef.current = false;
+          }
         }
-      };
-      
-      // Start the first switch after 6 seconds
-      gsap.delayedCall(6, switchStates);
+      });
     };
 
     // Initialize the page
     initializeShapes();
-    createTimedAnimation();
+    createScrollTriggeredAnimation();
 
     
-    // Ant animation starts when entering section
+    // Set initial ant box position off-screen to the right
+    gsap.set("#ant-container", { x: "100vw" });
+
+    // Ant box float in from right on scroll
     ScrollTrigger.create({
       trigger: ".ant-section",
-      start: "top center",
+      start: "top bottom",
+      end: "center center", 
+      scrub: 1,
+      onUpdate: (self) => {
+        const progress = self.progress;
+        // Float in from right (100vw to 0)
+        gsap.set("#ant-container", {
+          x: (1 - progress) * window.innerWidth
+        });
+      },
       onEnter: () => {
         startSingleAnt();
-        // Continue adding ants gradually (text is already visible)
+        // Continue adding ants gradually
         gsap.delayedCall(1, () => addAntsFromOffScreen(3));
         gsap.delayedCall(3, () => addAntsFromOffScreen(5));
         gsap.delayedCall(5, () => addAntsFromOffScreen(8));
         gsap.delayedCall(7, () => addAntsFromOffScreen(12));
-        
-        // Start automatic box movement after a delay (when ants have accumulated)
-        gsap.delayedCall(8, () => {
-          gsap.to("#ant-container", {
-            duration: 10,
-            x: -600,
-            ease: "power2.out"
-          });
-        });
       }
     });
 
-    // Reset box position when scrolling back up
+    // Ant box float out to left after center
     ScrollTrigger.create({
       trigger: ".ant-section",
-      start: "top center",
+      start: "center center",
       end: "bottom top",
-      onLeaveBack: () => {
-        // Reset box to original position when scrolling back up
-        gsap.to("#ant-container", {
-          duration: 2,
-          x: 0,
-          ease: "power2.out"
+      scrub: 1,
+      onUpdate: (self) => {
+        const progress = self.progress;
+        // Float out to left (0 to -600px)
+        gsap.set("#ant-container", {
+          x: -progress * 600
         });
       }
     });
@@ -201,13 +206,15 @@ export default function Home() {
         </nav>
       </header>
 
+      {/* Shapes canvas for background */}
+      <canvas 
+        ref={canvasRef}
+        id="shapes-canvas" 
+        className="fixed top-0 left-0 w-full h-full z-0"
+      />
+
       {/* Section 1: Transforming Shapes */}
       <section id="hero-section" className="relative overflow-hidden" style={{minHeight: '90vh'}}>
-        <canvas 
-          ref={canvasRef}
-          id="shapes-canvas" 
-          className="absolute inset-0 w-full h-full"
-        />
         <div className="relative z-10 h-full flex items-center justify-center">
           <div className="grid grid-cols-12 w-full">
             <div className="col-start-3 col-span-8 text-center flex flex-col items-center justify-center">
@@ -250,13 +257,8 @@ export default function Home() {
       </section>
 
       {/* Section 2: Think of AI like ants */}
-      <section className="ant-section relative" style={{backgroundColor: '#000000', height: '80vh', marginTop: 0}}>
-        {/* Bars canvas that reveals the ant box */}
-        <canvas 
-          ref={parallaxCanvasRef}
-          className="absolute inset-0 w-full h-full z-30"
-        />
-        <div className="relative z-10 h-full flex items-center justify-center p-6 overflow-hidden">
+      <section className="ant-section relative z-10" style={{backgroundColor: 'transparent', height: '80vh', marginTop: 0}}>
+        <div className="relative z-20 h-full flex items-center justify-center p-6 overflow-hidden">
           <div 
             id="ant-container"
             className="bg-purple-600 shadow-2xl transition-transform duration-1000 ease-out"
@@ -294,14 +296,14 @@ export default function Home() {
       </section>
 
       {/* Section 3: In this model, you lose */}
-      <section id="lose-section" className="relative min-h-screen bg-white flex items-center justify-center px-6">
+      <section id="lose-section" className="relative min-h-screen bg-transparent flex items-center justify-center px-6 z-10">
         <div className="grid grid-cols-12 w-full">
           <div className="col-start-3 col-span-8 text-center flex flex-col items-center justify-center">
-            <h2 className="font-bold text-black mb-12 leading-[0.9] p-4" style={{fontSize: '72px'}}>
+            <h2 className="font-bold text-white mb-12 leading-[0.9] p-4" style={{fontSize: '72px'}}>
               In this model, you lose
             </h2>
             <div className="max-w-4xl">
-              <p className="text-black text-xl leading-relaxed text-center max-w-[60ch] mx-auto">
+              <p className="text-white text-xl leading-relaxed text-center max-w-[60ch] mx-auto">
                 Your <span 
                   className="highlight-phrase relative inline-block" 
                   data-highlight="orange"
