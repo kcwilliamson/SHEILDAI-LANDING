@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useShapesAnimation } from '../hooks/useShapesAnimation';
@@ -294,52 +294,45 @@ export default function LandingPage() {
                 tech: "robots.txt",
                 what: "Have a small, hidden file on your website that politely tells major search engines (like Google) not to show certain pages in their search results.",
                 result: "Prevents pages you don't want public (like your admin area or duplicate content) from being indexed, but won't stop bad guys.",
-                color: "#FF8C00", number: "1"
+                color: "#E80954", number: "1"
               },
               {
                 title: "Set a speed limit for visitors",
                 tech: "Rate Limiting",
                 what: "Program your website to notice when one computer asks for content too quickly, too many times in a row.",
                 result: "If a computer tries to download your whole site in a minute, your site will slow them down or temporarily block them, protecting your bandwidth.",
-                color: "#4A90E2", number: "2"
+                color: "#CCFF00", number: "2"
               },
               {
                 title: "Block known troublemakers",
                 tech: "IP and User-Agent Blocking",
                 what: "If you see a specific computer address (IP) or software signature (User-Agent) that keeps stealing content, use a security tool to block them completely.",
                 result: "Stops known scrapers and their tools from ever loading your pages again.",
-                color: "#00CED1", number: "3"
-              },
-              {
-                title: "Ask a simple human test question",
-                tech: "CAPTCHAs",
-                what: "Put up a simple challenge (like \"click all the traffic lights\" or \"type the wavy letters\") before someone can access the content.",
-                result: "Stops basic automated programs, because they can't see or solve the visual puzzle.",
-                color: "#C147E9", number: "4"
+                color: "#0764E5", number: "3"
               },
               {
                 title: "Require a \"secret handshake\"",
                 tech: "JavaScript and API Keys",
                 what: "For special, programmatic access to your content, only allow it if the user provides a unique, authorized digital code (the API Key). You can also add hidden code that only a standard web browser can execute.",
                 result: "Ensures only approved users or apps can access your data, and simple scrapers that don't run website code fail to load the content.",
-                color: "#E91E63", number: "5"
+                color: "#F6821F", number: "4"
               },
               {
                 title: "Make the stolen content useless",
                 tech: "Content Obfuscation",
                 what: "Add invisible digital watermarks or unique tracking codes to your text and images.",
                 result: "If someone steals your content and puts it on their site, you can prove it's yours and trace exactly where they got it.",
-                color: "#FF8C00", number: "6"
+                color: "#2DB35E", number: "5"
               },
               {
                 title: "Watch for suspicious activity",
                 tech: "Monitoring and Analysis",
                 what: "Regularly look at your website traffic reports to spot strange behavior—like one user visiting 5,000 pages in an hour or accessing pages in a weird order.",
                 result: "Allows you to catch new scrapers before they cause major damage and block them quickly.",
-                color: "#4A90E2", number: "7"
+                color: "#8D1EB1", number: "6"
               }
             ].map((item, index, array) => (
-              <NumberedItem key={index} item={item} isLast={index === array.length - 1} />
+              <SlidingCard key={index} item={item} isLast={index === array.length - 1} />
             ))}
           </div>
         </div>
@@ -405,34 +398,49 @@ export default function LandingPage() {
   );
 }
 
-// Numbered Item Component
-function NumberedItem({ item, isLast }: { item: any; isLast: boolean }) {
+// Sliding Card Component
+function SlidingCard({ item, isLast }: { item: any; isLast: boolean }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   return (
-    <div className={`py-6 ${!isLast ? 'border-b border-gray-200' : ''}`}>
-      <div className="flex items-start">
-        <div 
-          className="font-bold mr-8 flex-shrink-0"
-          style={{ color: item.color, fontSize: '120px', lineHeight: '1' }}
-        >
-          {item.number}
+    <div className={`relative overflow-hidden rounded-xl mb-6 ${!isLast ? '' : 'mb-0'} cursor-pointer`} onClick={() => setIsExpanded(!isExpanded)}>
+      {/* Background colored section */}
+      <div 
+        className="p-8 text-white transition-all duration-500 ease-in-out"
+        style={{ backgroundColor: item.color }}
+      >
+        <div className="flex items-start">
+          <div 
+            className="font-bold mr-6 flex-shrink-0"
+            style={{ fontSize: '120px', lineHeight: '1' }}
+          >
+            {item.number}
+          </div>
+          <div className="flex-1">
+            <h3 className="font-bold mb-3" style={{fontSize: '28px'}}>
+              {item.title}
+            </h3>
+            <span className="bg-white/20 px-4 py-2 rounded text-white font-semibold" style={{fontSize: '14px'}}>
+              Using: {item.tech}
+            </span>
+          </div>
         </div>
-        <div className="flex-1">
-          <h3 className="font-bold text-gray-900 mb-2" style={{fontSize: '24px'}}>
-            {item.title}
-          </h3>
-          <span className="text-gray-500 bg-gray-100 px-3 py-1 rounded text-sm mb-4 inline-block">
-            Using: {item.tech}
-          </span>
-          
-          <div className="space-y-4 mt-4">
-            <div>
-              <span className="font-bold text-gray-800 block mb-2" style={{fontSize: '16px'}}>What to do:</span>
-              <p className="text-gray-700 leading-relaxed" style={{fontSize: '16px'}}>{item.what}</p>
-            </div>
-            <div>
-              <span className="font-bold text-gray-800 block mb-2" style={{fontSize: '16px'}}>Result:</span>
-              <p className="text-gray-700 leading-relaxed" style={{fontSize: '16px'}}>{item.result}</p>
-            </div>
+      </div>
+
+      {/* Expanded content section */}
+      <div 
+        className={`bg-white p-8 transition-all duration-500 ease-in-out overflow-hidden ${
+          isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <div className="space-y-6">
+          <div>
+            <h4 className="font-bold text-gray-800 mb-3" style={{fontSize: '18px'}}>What to do:</h4>
+            <p className="text-gray-700 leading-relaxed" style={{fontSize: '16px'}}>{item.what}</p>
+          </div>
+          <div>
+            <h4 className="font-bold text-gray-800 mb-3" style={{fontSize: '18px'}}>Result:</h4>
+            <p className="text-gray-700 leading-relaxed" style={{fontSize: '16px'}}>{item.result}</p>
           </div>
         </div>
       </div>
