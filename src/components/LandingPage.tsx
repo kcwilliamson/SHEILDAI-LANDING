@@ -376,18 +376,46 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <RisingShapes />
+          {/* Embedded Video */}
+          <div className="mb-16 max-w-4xl mx-auto">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl border-2 border-black">
+              <video
+                controls
+                preload="metadata"
+                className="w-full h-auto"
+                style={{aspectRatio: '16/9'}}
+              >
+                <source 
+                  src="https://customer-1mwganm1ma0xgnmj.cloudflarestream.com/c2f3d8aada64a53e6cc118e5af834601/manifest/video.m3u8" 
+                  type="application/x-mpegURL"
+                />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
 
-          <div className="text-center mt-16">
-            <a 
-              href="https://www.cloudflare.com/plans/enterprise/contact/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-block bg-orange-500 text-white font-bold px-12 py-4 rounded-full shadow-lg hover:bg-orange-600 transition-colors duration-200"
-              style={{fontSize: '16px'}}
-            >
-              Connect with Cloudflare
-            </a>
+          <div className="text-center">
+            <p className="text-gray-700 mb-8 max-w-3xl mx-auto leading-relaxed" style={{fontSize: '18px'}}>
+              Ready to take control of your content protection? 
+              <a 
+                href="https://www.cloudflare.com/plans/enterprise/contact/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-orange-500 hover:text-orange-600 font-semibold underline mx-1"
+              >
+                Reach out to Cloudflare
+              </a>
+              to learn more about how we can help, or 
+              <a 
+                href="https://developers.cloudflare.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-orange-500 hover:text-orange-600 font-semibold underline mx-1"
+              >
+                read our documentation
+              </a>
+              to see what we can offer.
+            </p>
           </div>
         </div>
       </section>
@@ -437,58 +465,3 @@ function AccordionItem({ item, isLast }: { item: any; isLast: boolean }) {
   );
 }
 
-// Static Rectangles Component
-function RisingShapes() {
-  const shapes = [
-    {
-      id: 1,
-      icon: "✕",
-      title: "Block AI Bots",
-      color: "bg-pink-500",
-      desc: "AI Crawl Control integrates with Bot Management to block bots like GPTBot and ClaudeBot. Dashboard shows blocked requests with 4xx status codes."
-    },
-    {
-      id: 2,
-      icon: "✓",
-      title: "Control Access", 
-      color: "bg-blue-500",
-      desc: "Allow trusted AI agents through AI Crawl Control. Bot Management tracks successful requests with 2xx status codes and shows which pages AI values most."
-    },
-    {
-      id: 3,
-      icon: "$",
-      title: "Pay Per Crawl",
-      color: "bg-green-500", 
-      desc: "Use Pay Per Crawl with AI Crawl Control to charge AI crawlers. System enforces pricing with 402 Payment Required status and logs all monetized requests."
-    }
-  ];
-
-  return (
-    <div className="grid md:grid-cols-3 gap-6">
-      {shapes.map((shape) => {
-        return (
-          <div 
-            key={shape.id}
-            className={`
-              rounded-2xl shadow-lg p-8 text-white h-80
-              ${shape.color}
-            `}
-          >
-            <div className="flex flex-col items-center text-center h-full">
-              <div className="text-6xl font-bold mb-4">{shape.icon}</div>
-              <h3 className="font-bold text-xl mb-6">
-                {shape.title}
-              </h3>
-              
-              <div className="w-16 h-1 bg-white/50 rounded mb-6"></div>
-              
-              <p className="text-white leading-relaxed text-sm flex-1 flex items-center">
-                {shape.desc}
-              </p>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
