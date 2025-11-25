@@ -2,13 +2,11 @@ import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useShapesAnimation } from '../hooks/useShapesAnimation';
-import { useAntAnimation } from '../hooks/useAntAnimation';
 
 export default function LandingPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isColorfulRef = useRef(false);
   const { canvasRef, transformToColorful, transformToGrey, continueShapesInBackground, exitShapes } = useShapesAnimation();
-  const { canvasRef: antCanvasRef, startSingleAnt, addMoreAnts, addAntsFromOffScreen, resetToSingleAnt, startSequentialAntAnimation } = useAntAnimation();
 
   
   useEffect(() => {
@@ -123,52 +121,40 @@ export default function LandingPage() {
     createScrollTriggeredAnimation();
 
     
-    // Set initial ant box position off-screen to the right
-    gsap.set("#ant-container", { x: "100vw" });
 
-    // Ant box float in from right on scroll
-    ScrollTrigger.create({
-      trigger: ".ant-section",
-      start: "top bottom",
-      end: "center center", 
-      scrub: 1,
-      onUpdate: (self) => {
-        const progress = self.progress;
-        // Float in from right (100vw to 0)
-        gsap.set("#ant-container", {
-          x: (1 - progress) * window.innerWidth
+    // Looping highlight animations for lose section
+    const startHighlightLoop = () => {
+      const highlights = document.querySelectorAll('.highlight-bg');
+      
+      const animateHighlights = () => {
+        highlights.forEach((highlight, index) => {
+          gsap.fromTo(highlight, 
+            {
+              scaleX: 0,
+              transformOrigin: "left center"
+            },
+            {
+              duration: 0.8,
+              scaleX: 1,
+              ease: "power2.out",
+              delay: index * 0.3,
+              onComplete: index === highlights.length - 1 ? () => {
+                // Reset all highlights after the last one completes, then wait for 5-second cycle
+                gsap.delayedCall(2, () => {
+                  gsap.set(highlights, { scaleX: 0 });
+                  gsap.delayedCall(0.5, animateHighlights); // Restart the loop every 5 seconds total
+                });
+              } : undefined
+            }
+          );
         });
-      },
-      onEnter: () => {
-        // Start the sequential ant animation - ants just crawl naturally
-        startSequentialAntAnimation(() => {});
-        
-        // Start box movement independently after 5 seconds
-        gsap.delayedCall(5, () => {
-          gsap.to("#ant-container", {
-            duration: 3,
-            x: -600,
-            ease: "power2.out"
-          });
-        });
-      }
-    });
-
-    // Reset box position when scrolling back up
-    ScrollTrigger.create({
-      trigger: ".ant-section",
-      start: "top center",
-      end: "bottom top",
-      onLeaveBack: () => {
-        // Reset box to original position when scrolling back up
-        gsap.to("#ant-container", {
-          duration: 2,
-          x: 0,
-          ease: "power2.out"
-        });
-        resetToSingleAnt();
-      }
-    });
+      };
+      
+      animateHighlights();
+    };
+    
+    // Start the loop when the component loads
+    gsap.delayedCall(2, startHighlightLoop);
 
     // Protection pills animation
     ScrollTrigger.create({
@@ -193,7 +179,7 @@ export default function LandingPage() {
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
-  }, [transformToColorful, transformToGrey, continueShapesInBackground, exitShapes, startSingleAnt, addMoreAnts, addAntsFromOffScreen, resetToSingleAnt]);
+  }, [transformToColorful, transformToGrey, continueShapesInBackground, exitShapes]);
 
   return (
     <div ref={containerRef} className="min-h-screen">
@@ -244,103 +230,65 @@ export default function LandingPage() {
       />
 
       {/* Section 1: Transforming Shapes */}
-      <section id="hero-section" className="relative overflow-hidden" style={{minHeight: '90vh'}}>
-        <div className="relative z-10 h-full flex items-center justify-center">
-          <div className="grid grid-cols-12 w-full">
-            <div className="col-start-3 col-span-8 text-center flex flex-col items-center justify-center">
-              <h1 
-                id="main-text"
-                className="font-bold text-white leading-[0.8] p-4 mb-6"
-                style={{fontSize: '85px'}}
-              >
-                It&apos;s not<br />
-                Artificial<br />
-                Intelligence
-              </h1>
-              
-              {/* Content below main text */}
-              <div className="mt-4 max-w-4xl">
-                <h2 className="font-bold text-white mb-4 text-center leading-tight" style={{fontSize: '32px'}}>
-                  Your content fuels AI
-                </h2>
-                <div className="space-y-3 font-inter font-extrabold text-gray-200 leading-relaxed text-center max-w-[60ch] mx-auto p-5 bg-black/40 backdrop-blur-sm rounded-lg" style={{fontSize: '24px'}}>
-                  <p>
-                    Imagine all the photos, articles, videos, and code you and 
-                    millions of others have ever created. Your unique, high-quality 
-                    work isn&apos;t just viewed by people—it&apos;s being analyzed and 
-                    absorbed by modern AI systems.
-                  </p>
-                  <p className="font-semibold text-white">
-                    Essentially, your content is the fuel for Generative AI.
-                  </p>
-                  <p>
-                    These systems look at the vast collection of human creativity to 
-                    learn the fundamental rules of style, language, and structure, 
-                    allowing the AI to then create its own intelligent content and 
-                    improve the collective knowledge base.
-                  </p>
-                </div>
-              </div>
-            </div>
+      <section id="hero-section" className="relative overflow-hidden flex items-center justify-center" style={{minHeight: '90vh'}}>
+        <div className="relative z-10 w-full h-full flex items-center justify-center">
+          <div className="text-center">
+            <h1 
+              id="main-text"
+              className="font-bold text-white leading-[0.8]"
+              style={{fontSize: '100px'}}
+            >
+              It&apos;s not<br />
+              Artificial<br />
+              Intelligence
+            </h1>
           </div>
         </div>
       </section>
 
-      {/* Section 2: Think of AI like ants */}
-      <section className="ant-section relative z-10" style={{backgroundColor: 'transparent', height: '80vh', marginTop: 0}}>
-        <div className="relative z-20 h-full flex items-center justify-center p-6 overflow-hidden">
-          <div 
-            id="ant-container"
-            className="bg-purple-600 shadow-2xl transition-transform duration-1000 ease-out"
-            style={{backgroundColor: '#8D1EB1', width: '70vh', height: '70vh', position: 'relative', borderRadius: '60px'}}
-          >
-            <canvas 
-              ref={antCanvasRef}
-              className="absolute inset-0 w-full h-full"
-              style={{borderRadius: '60px'}}
-            />
-            <div className="relative z-20 h-full flex items-center justify-center px-6">
-              <div className="grid grid-cols-12 w-full">
-                <div className="col-start-3 col-span-8 text-center flex flex-col items-center justify-center">
-                  <h2 className="font-bold text-white mb-6 leading-[0.85] p-4" style={{fontSize: '48px'}}>
-                    Think of AI like ants
-                  </h2>
-                  <div className="max-w-4xl space-y-4">
-                    <p className="text-white font-inter font-extrabold leading-relaxed text-center max-w-[60ch] mx-auto" style={{fontSize: '18px'}}>
-                      No single ant is a genius, but together they create complex systems, 
-                      build intricate colonies, and solve problems that would be impossible 
-                      for any individual ant to tackle alone.
-                    </p>
-                    <p className="text-white font-inter font-extrabold leading-relaxed text-center max-w-[60ch] mx-auto" style={{fontSize: '18px'}}>
-                      Just like an ant colony, AI is now leveraging multi-agent systems. Instead of one brain, 
-                      multiple, specialized AI agents collaborate, share data, and follow simple rules to solve 
-                      complex problems. This creates a "swarm intelligence" that dramatically boosts performance 
-                      and forms a powerful collective machine intelligence.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+      {/* Section 2: Your content fuels AI */}
+      <section className="relative bg-transparent flex items-center justify-center px-6 py-16 z-10">
+        <div className="max-w-4xl text-center">
+          <h2 className="font-bold text-white mb-8 text-center leading-tight" style={{fontSize: '26px'}}>
+            Your content fuels AI
+          </h2>
+          <div className="space-y-6 text-gray-200 leading-relaxed text-center mx-auto p-8 bg-black/40 backdrop-blur-sm rounded-lg" style={{fontSize: '16px'}}>
+            <p>
+              Imagine all the photos, articles, videos, and code you and 
+              millions of others have ever created. Your unique, high-quality 
+              work isn&apos;t just viewed by people—it&apos;s being analyzed and 
+              absorbed by modern AI systems.
+            </p>
+            <p className="font-semibold text-white">
+              Essentially, your content is the fuel for Generative AI.
+            </p>
+            <p>
+              These systems look at the vast collection of human creativity to 
+              learn the fundamental rules of style, language, and structure, 
+              allowing the AI to then create its own intelligent content and 
+              improve the collective knowledge base.
+            </p>
           </div>
         </div>
       </section>
+
 
       {/* Section 3: In this model, you lose */}
       <section id="lose-section" className="relative min-h-screen bg-transparent flex items-center justify-center px-6 z-10">
         <div className="grid grid-cols-12 w-full">
           <div className="col-start-3 col-span-8 text-center flex flex-col items-center justify-center">
-            <h2 className="font-bold text-white mb-12 leading-[0.9] p-4" style={{fontSize: '72px'}}>
+            <h2 className="font-bold text-white mb-12 leading-[0.9] p-4" style={{fontSize: '75px'}}>
               In this model, you lose
             </h2>
-            <div className="max-w-4xl">
-              <p className="text-white font-inter font-extrabold leading-relaxed text-center max-w-[60ch] mx-auto" style={{fontSize: '24px'}}>
+            <div className="max-w-4xl bg-black/40 backdrop-blur-sm p-8 rounded-lg">
+              <p className="text-white leading-relaxed text-center mx-auto" style={{fontSize: '16px'}}>
                 Your <span 
                   className="highlight-phrase relative inline-block" 
                   data-highlight="orange"
                   style={{position: 'relative'}}
                 >
-                  <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#FF8C00', zIndex: 0}}></span>
-                  original content
+                  <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#FF8C00', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
+                  <span className="relative z-10">original content</span>
                 </span> fundamentally enables modern AI by serving as the massive training 
                 data set from which systems learn human creativity and style. The core issue is that your 
                 work <span 
@@ -348,29 +296,29 @@ export default function LandingPage() {
                   data-highlight="purple"
                   style={{position: 'relative'}}
                 >
-                  <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#C147E9', zIndex: 0}}></span>
-                  is being scraped
+                  <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#C147E9', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
+                  <span className="relative z-10">is being scraped</span>
                 </span> and used commercially to build these AI models <span 
                   className="highlight-phrase relative inline-block" 
                   data-highlight="green"
                   style={{position: 'relative'}}
                 >
-                  <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#00CED1', zIndex: 0}}></span>
-                  without credit
+                  <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#00CED1', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
+                  <span className="relative z-10">without credit</span>
                 </span>, <span 
                   className="highlight-phrase relative inline-block" 
                   data-highlight="blue"
                   style={{position: 'relative'}}
                 >
-                  <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#4A90E2', zIndex: 0}}></span>
-                  attribution
+                  <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#4A90E2', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
+                  <span className="relative z-10">attribution</span>
                 </span>, or <span 
                   className="highlight-phrase relative inline-block" 
                   data-highlight="pink"
                   style={{position: 'relative'}}
                 >
-                  <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#E91E63', zIndex: 0}}></span>
-                  direct payment
+                  <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#E91E63', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
+                  <span className="relative z-10">direct payment</span>
                 </span>, allowing the AI to generate competing content that 
                 bypasses your platform and effectively breaks your traditional monetization stream.
               </p>
@@ -382,7 +330,7 @@ export default function LandingPage() {
       {/* Section 4: Content Protection Options */}
       <section id="protection-section" className="relative min-h-screen bg-white flex flex-col items-center justify-center px-6 py-20">
         <div className="max-w-7xl mx-auto">
-          <h2 className="font-bold text-black text-center mb-16 leading-tight" style={{fontSize: '56px'}}>
+          <h2 className="font-bold text-black text-center mb-16 leading-tight" style={{fontSize: '26px'}}>
             It's not too late to protect your content
           </h2>
           
@@ -392,10 +340,10 @@ export default function LandingPage() {
               <div className="absolute inset-0 bg-pink-500 rounded-3xl shadow-lg"></div>
               <div className="relative z-10 p-8 h-full flex flex-col justify-between text-white">
                 <div className="text-center">
-                  <h3 className="text-4xl font-bold mb-4">Block</h3>
+                  <h3 className="font-bold mb-4" style={{fontSize: '20px'}}>Block</h3>
                   <div className="text-6xl font-bold">✕</div>
                 </div>
-                <p className="text-white text-sm leading-relaxed mt-4">
+                <p className="text-white leading-relaxed mt-4" style={{fontSize: '16px'}}>
                   Cloudflare's AI Crawl Control integrates seamlessly with Bot Management and your WAF: simply block bots like GPTBot or ClaudeBot, and the dashboard will confirm your refusal with $4xx$ status codes.
                 </p>
               </div>
@@ -406,10 +354,10 @@ export default function LandingPage() {
               <div className="absolute inset-0 bg-blue-500 rounded-3xl shadow-lg"></div>
               <div className="relative z-10 p-8 h-full flex flex-col justify-between text-white">
                 <div className="text-center">
-                  <h3 className="text-4xl font-bold mb-4">Allow</h3>
+                  <h3 className="font-bold mb-4" style={{fontSize: '20px'}}>Allow</h3>
                   <div className="text-6xl font-bold">✓</div>
                 </div>
-                <p className="text-white text-sm leading-relaxed mt-4">
+                <p className="text-white leading-relaxed mt-4" style={{fontSize: '16px'}}>
                   When you Allow an AI agent via AI Crawl Control, the Bot Management system provides detailed tracking with $2xx$ status codes and reveals which pages these allowed AI agents value most.
                 </p>
               </div>
@@ -420,10 +368,10 @@ export default function LandingPage() {
               <div className="absolute inset-0 bg-green-500 rounded-3xl shadow-lg"></div>
               <div className="relative z-10 p-8 h-full flex flex-col justify-between text-white">
                 <div className="text-center">
-                  <h3 className="text-4xl font-bold mb-4">Charge</h3>
+                  <h3 className="font-bold mb-4" style={{fontSize: '20px'}}>Charge</h3>
                   <div className="text-6xl font-bold">$</div>
                 </div>
-                <p className="text-white text-sm leading-relaxed mt-4">
+                <p className="text-white leading-relaxed mt-4" style={{fontSize: '16px'}}>
                   Enable the Charge rule through Pay Per Crawl feature in AI Crawl Control, which enforces your pricing policy by signaling $402$ Payment Required status for monetized requests.
                 </p>
               </div>
@@ -431,8 +379,8 @@ export default function LandingPage() {
           </div>
 
           <div className="text-center">
-            <h3 className="text-4xl font-bold text-black mb-8">Get started today</h3>
-            <button className="bg-orange-500 text-white px-12 py-4 rounded-full text-xl font-semibold hover:bg-orange-600 transition-colors duration-200">
+            <h3 className="font-bold text-black mb-8" style={{fontSize: '20px'}}>Get started today</h3>
+            <button className="bg-orange-500 text-white px-12 py-4 rounded-full font-semibold hover:bg-orange-600 transition-colors duration-200" style={{fontSize: '16px'}}>
               Contact Cloudflare
             </button>
           </div>
@@ -451,10 +399,10 @@ export default function LandingPage() {
             />
           </div>
           
-          <h2 className="font-bold text-gray-900 mb-8 leading-tight" style={{fontSize: '64px'}}>
+          <h2 className="font-bold text-gray-900 mb-8 leading-tight" style={{fontSize: '26px'}}>
             Connect with Cloudflare
           </h2>
-          <p className="text-xl text-gray-700 mb-12 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-gray-700 mb-12 max-w-4xl mx-auto leading-relaxed" style={{fontSize: '16px'}}>
             Ready to protect your content and monetize your AI interactions? Our team of experts is standing by 
             to help you implement the perfect solution for your business needs.
           </p>
@@ -462,20 +410,20 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             <div className="bg-gray-50 p-8 rounded-2xl shadow-sm border">
               <div className="text-blue-500 text-4xl mb-4">🛡️</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Content Protection</h3>
-              <p className="text-gray-600">Secure your intellectual property from unauthorized AI scraping</p>
+              <h3 className="font-bold text-gray-900 mb-4" style={{fontSize: '20px'}}>Content Protection</h3>
+              <p className="text-gray-600" style={{fontSize: '16px'}}>Secure your intellectual property from unauthorized AI scraping</p>
             </div>
             
             <div className="bg-gray-50 p-8 rounded-2xl shadow-sm border">
               <div className="text-green-500 text-4xl mb-4">💰</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Monetization</h3>
-              <p className="text-gray-600">Generate revenue from AI companies accessing your content</p>
+              <h3 className="font-bold text-gray-900 mb-4" style={{fontSize: '20px'}}>Monetization</h3>
+              <p className="text-gray-600" style={{fontSize: '16px'}}>Generate revenue from AI companies accessing your content</p>
             </div>
             
             <div className="bg-gray-50 p-8 rounded-2xl shadow-sm border">
               <div className="text-orange-500 text-4xl mb-4">⚡</div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Easy Setup</h3>
-              <p className="text-gray-600">Get up and running in minutes with our expert guidance</p>
+              <h3 className="font-bold text-gray-900 mb-4" style={{fontSize: '20px'}}>Easy Setup</h3>
+              <p className="text-gray-600" style={{fontSize: '16px'}}>Get up and running in minutes with our expert guidance</p>
             </div>
           </div>
           
@@ -483,7 +431,8 @@ export default function LandingPage() {
             href="https://www.cloudflare.com/plans/enterprise/contact/" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="inline-block bg-orange-500 text-white px-12 py-4 rounded-full text-xl font-semibold hover:bg-orange-600 transition-colors duration-200 shadow-lg"
+            className="inline-block bg-orange-500 text-white px-12 py-4 rounded-full font-semibold hover:bg-orange-600 transition-colors duration-200 shadow-lg"
+            style={{fontSize: '16px'}}
           >
             Connect with Cloudflare Sales
           </a>
