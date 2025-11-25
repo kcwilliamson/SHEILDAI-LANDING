@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useShapesAnimation } from '../hooks/useShapesAnimation';
@@ -170,44 +170,43 @@ export default function LandingPage() {
 
   return (
     <div ref={containerRef} className="min-h-screen">
-      {/* Header */}
-      <header className="w-full bg-white shadow-lg border-b border-gray-200">
-        <nav className="flex items-center justify-between px-8 py-4 w-full">
-          {/* Left Side - Cloudflare Logo */}
-          <div className="flex items-center">
-            <a href="https://cloudflare.com" target="_blank" rel="noopener noreferrer" className="flex items-center hover:opacity-80 transition-opacity">
-              <img 
-                src="https://pub-aa908c10829e4ed6b353da031aeb7c2b.r2.dev/Content%20Protection/1pixel-down__1_.svg" 
-                alt="Cloudflare Logo" 
-                className="h-10"
-              />
-            </a>
-          </div>
+      {/* Cloudflare Logo - Top Left */}
+      <div className="fixed top-6 left-6 z-50">
+        <a 
+          href="https://cloudflare.com" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="block hover:opacity-80 transition-opacity"
+        >
+          <img 
+            src="https://pub-aa908c10829e4ed6b353da031aeb7c2b.r2.dev/Content%20Protection/white%20cloudflare.png" 
+            alt="Cloudflare Logo" 
+            className="h-32"
+          />
+        </a>
+      </div>
 
-          {/* Right Side - Navigation Menu */}
-          <div className="flex items-center">
-            {/* Desktop Menu */}
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#hero-section" className="text-gray-800 hover:text-orange-500 font-semibold transition-colors px-3 py-2 rounded-md hover:bg-gray-50">
-                What is AI
-              </a>
-              <a href="#protection-section" className="text-gray-800 hover:text-orange-500 font-semibold transition-colors px-3 py-2 rounded-md hover:bg-gray-50">
-                How to protect your content
-              </a>
-              <a href="#connect-section" className="bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600 font-semibold transition-all duration-200 shadow-md hover:shadow-lg ml-4">
-                Connect with Cloudflare
-              </a>
-            </div>
-            
-            {/* Mobile Menu Button */}
-            <button className="md:hidden p-2 text-gray-800 hover:text-orange-500 transition-colors ml-4">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-          </div>
-        </nav>
-      </header>
+      {/* Navigation Items - Top Right */}
+      <nav className="fixed top-6 right-6 z-50 hidden md:flex items-center space-x-6">
+        <a 
+          href="#section-2" 
+          className="text-white hover:text-orange-400 font-semibold transition-colors px-3 py-2 rounded-md hover:bg-white/10"
+        >
+          Generative AI
+        </a>
+        <a 
+          href="#section-3" 
+          className="text-white hover:text-orange-400 font-semibold transition-colors px-3 py-2 rounded-md hover:bg-white/10"
+        >
+          Best Practices
+        </a>
+        <a 
+          href="#section-4" 
+          className="text-white hover:text-orange-400 font-semibold transition-colors px-3 py-2 rounded-md hover:bg-white/10"
+        >
+          Protect Your Content
+        </a>
+      </nav>
 
       {/* Shapes canvas for background */}
       <canvas 
@@ -233,45 +232,28 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Section 2: Understanding the Threat */}
-      <section className="relative bg-transparent flex items-center justify-center px-6 pt-16 pb-32 z-10">
-        <div className="max-w-4xl text-center">
+      {/* Section 2: Content with highlight effects */}
+      <section id="section-2" className="relative py-20 px-6 bg-transparent z-10">
+        <div className="max-w-4xl mx-auto">
           <div className="bg-black/40 backdrop-blur-sm p-10 rounded-lg">
             <p className="font-bold text-white mb-10 leading-tight" style={{fontSize: '40px'}}>
               Generative AI doesn't create ideas out of thin air—it builds them based on yours
             </p>
-            
             <p className="text-gray-200 leading-relaxed mb-16" style={{fontSize: '18px'}}>
-              Imagine every photo, article, video, and line of code you have ever created. AI models are trained by analyzing these vast collections of human work. They scan your unique content to learn the fundamental rules of style, language, and structure. Essentially, your high-quality work serves as the training data that teaches the AI how to be creative.
+              Imagine every photo, article, video, and line of code you have ever created being fed into a machine learning model. That's essentially what's happening. AI companies are scraping the web, building massive datasets from publicly available content, and training models that can then generate "new" content based on patterns they've learned from your work.
             </p>
-
-            <h3 className="font-bold text-white mb-6 leading-tight" style={{fontSize: '40px'}}>In this model, you lose</h3>
-            
+            <h3 className="font-bold text-white mb-6 leading-tight" style={{fontSize: '40px'}}>
+              In this model, you lose
+            </h3>
             <p className="text-gray-200 leading-relaxed mb-8" style={{fontSize: '18px'}}>
-              While your content is what makes these systems intelligent, the value is flowing in only one direction. 
-              <span 
-                className="highlight-phrase relative inline-block font-semibold text-white ml-1" 
-                style={{position: 'relative'}}
-              >
-                <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#FF8C00', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
-                <span className="relative z-10">Unauthorized Scraping</span>
-              </span> means your work is being harvested to build commercial models without your credit, attribution, or consent. 
-              <span 
-                className="highlight-phrase relative inline-block font-semibold text-white ml-1" 
-                style={{position: 'relative'}}
-              >
-                <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#4A90E2', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
-                <span className="relative z-10">No Compensation</span>
-              </span> occurs as tech giants profit from your creativity without offering direct payment. Most dangerously, 
-              <span 
-                className="highlight-phrase relative inline-block font-semibold text-white ml-1" 
-                style={{position: 'relative'}}
-              >
-                <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#E91E63', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
-                <span className="relative z-10">Lost Monetization</span>
-              </span> happens when AI models use your own style to generate competing content, bypassing your platform entirely and diverting traffic while breaking your traditional revenue streams.
+              While your content is what makes these systems intelligent, the value is flowing in only one direction.
+              <span className="highlight-phrase bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent font-bold mx-2">Unauthorized Scraping</span>
+              takes your work without permission.
+              <span className="highlight-phrase bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent font-bold mx-2">No Compensation</span>
+              means you see nothing for your contribution.
+              <span className="highlight-phrase bg-gradient-to-r from-green-400 to-teal-500 bg-clip-text text-transparent font-bold mx-2">Lost Monetization</span>
+              as AI-generated alternatives compete directly with your original work.
             </p>
-            
             <p className="text-white font-semibold mt-8 leading-relaxed" style={{fontSize: '20px'}}>
               In short: You provide the intelligence, but the AI captures the value.
             </p>
@@ -279,67 +261,54 @@ export default function LandingPage() {
         </div>
       </section>
 
-
-      {/* Section 3: How to fight back - FAQ Style */}
-      <section className="relative py-20 px-6 bg-white">
-        <div className="max-w-4xl mx-auto">
+      {/* Section 3: How to fight back */}
+      <section id="section-3" className="relative py-20 bg-white">
+        <div className="max-w-4xl mx-auto px-6">
           <h2 className="font-bold text-black text-center mb-16 leading-tight" style={{fontSize: '40px'}}>
             How to fight back
           </h2>
           
-          <div className="p-10 bg-white shadow-lg">
+          <div className="space-y-8">
             {[
               {
-                title: "Tell the good bots what not to see",
-                tech: "robots.txt",
-                what: "Have a small, hidden file on your website that politely tells major search engines (like Google) not to show certain pages in their search results.",
-                result: "Prevents pages you don't want public (like your admin area or duplicate content) from being indexed, but won't stop bad guys.",
-                color: "#E80954", number: "1"
+                title: "robots.txt",
+                icon: "🤖",
+                description: "Have a small, hidden file on your website that politely tells major search engines (like Google) not to show certain pages in their search results."
               },
               {
-                title: "Set a speed limit for visitors",
-                tech: "Rate Limiting",
-                what: "Program your website to notice when one computer asks for content too quickly, too many times in a row.",
-                result: "If a computer tries to download your whole site in a minute, your site will slow them down or temporarily block them, protecting your bandwidth.",
-                color: "#CCFF00", number: "2"
+                title: "Rate Limiting",
+                icon: "⏱️",
+                description: "Program your website to notice when one computer asks for content too quickly, too many times in a row."
               },
               {
-                title: "Block known troublemakers",
-                tech: "IP and User-Agent Blocking",
-                what: "If you see a specific computer address (IP) or software signature (User-Agent) that keeps stealing content, use a security tool to block them completely.",
-                result: "Stops known scrapers and their tools from ever loading your pages again.",
-                color: "#0764E5", number: "3"
+                title: "IP & User-Agent Blocking",
+                icon: "🚫",
+                description: "If you see a specific computer address (IP) or software signature (User-Agent) that keeps stealing content, use a security tool to block them completely."
               },
               {
-                title: "Require a \"secret handshake\"",
-                tech: "JavaScript and API Keys",
-                what: "For special, programmatic access to your content, only allow it if the user provides a unique, authorized digital code (the API Key). You can also add hidden code that only a standard web browser can execute.",
-                result: "Ensures only approved users or apps can access your data, and simple scrapers that don't run website code fail to load the content.",
-                color: "#F6821F", number: "4"
+                title: "JavaScript & API Keys",
+                icon: "🔑",
+                description: "For special, programmatic access to your content, only allow it if the user provides a unique, authorized digital code (the API Key)."
               },
               {
-                title: "Make the stolen content useless",
-                tech: "Content Obfuscation",
-                what: "Add invisible digital watermarks or unique tracking codes to your text and images.",
-                result: "If someone steals your content and puts it on their site, you can prove it's yours and trace exactly where they got it.",
-                color: "#2DB35E", number: "5"
+                title: "Content Obfuscation",
+                icon: "🛡️",
+                description: "Add invisible digital watermarks or unique tracking codes to your text and images."
               },
               {
-                title: "Watch for suspicious activity",
-                tech: "Monitoring and Analysis",
-                what: "Regularly look at your website traffic reports to spot strange behavior—like one user visiting 5,000 pages in an hour or accessing pages in a weird order.",
-                result: "Allows you to catch new scrapers before they cause major damage and block them quickly.",
-                color: "#8D1EB1", number: "6"
+                title: "Monitoring & Analysis",
+                icon: "📊",
+                description: "Regularly look at your website traffic reports to spot strange behavior—like one user visiting 5,000 pages in an hour or accessing pages in a weird order."
               }
-            ].map((item, index, array) => (
-              <SlidingCard key={index} item={item} isLast={index === array.length - 1} />
+            ].map((item, index) => (
+              <ProtectionMethod key={index} item={item} />
             ))}
           </div>
         </div>
       </section>
 
       {/* Section 4: Get Started with Cloudflare */}
-      <section className="relative py-20 px-6 bg-gray-50">
+      <section id="section-4" className="relative py-20 px-6 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="font-bold text-black mb-8 leading-tight" style={{fontSize: '40px'}}>
@@ -366,30 +335,40 @@ export default function LandingPage() {
                 Your browser does not support the video tag.
               </video>
             </div>
-          </div>
-
-          <div className="text-center">
-            <p className="text-gray-700 mb-8 max-w-3xl mx-auto leading-relaxed" style={{fontSize: '18px'}}>
-              Ready to take control of your content protection? 
+            
+            <div className="text-center mt-8">
+              <p className="text-gray-700 text-center mb-8 leading-relaxed" style={{fontSize: '16px'}}>
+                Reach out to 
+                <a 
+                  href="https://cloudflare.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-orange-500 hover:text-orange-600 font-semibold underline mx-1"
+                >
+                  Cloudflare
+                </a>
+                to learn more about how we can help, or 
+                <a 
+                  href="https://developers.cloudflare.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-orange-500 hover:text-orange-600 font-semibold underline mx-1"
+                >
+                  read our documentation
+                </a>
+                to see what we can offer.
+              </p>
+              
               <a 
-                href="https://www.cloudflare.com/plans/enterprise/contact/" 
+                href="https://cloudflare.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-orange-500 hover:text-orange-600 font-semibold underline mx-1"
+                className="bg-orange-500 text-white px-8 py-4 rounded-lg hover:bg-orange-600 font-bold transition-all duration-200 shadow-lg hover:shadow-xl inline-block"
+                style={{fontSize: '18px'}}
               >
-                Reach out to Cloudflare
+                Protect My Content
               </a>
-              to learn more about how we can help, or 
-              <a 
-                href="https://developers.cloudflare.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-orange-500 hover:text-orange-600 font-semibold underline mx-1"
-              >
-                read our documentation
-              </a>
-              to see what we can offer.
-            </p>
+            </div>
           </div>
         </div>
       </section>
@@ -398,51 +377,27 @@ export default function LandingPage() {
   );
 }
 
-// Sliding Card Component
-function SlidingCard({ item, isLast }: { item: any; isLast: boolean }) {
-  const [isExpanded, setIsExpanded] = useState(false);
-
+// Protection Method Component
+function ProtectionMethod({ item }: { item: any }) {
   return (
-    <div className={`relative overflow-hidden rounded-xl mb-6 ${!isLast ? '' : 'mb-0'} cursor-pointer`} onClick={() => setIsExpanded(!isExpanded)}>
-      {/* Background colored section */}
-      <div 
-        className="p-8 text-white transition-all duration-500 ease-in-out"
-        style={{ backgroundColor: item.color }}
-      >
-        <div className="flex items-start">
-          <div 
-            className="font-bold mr-6 flex-shrink-0"
-            style={{ fontSize: '120px', lineHeight: '1' }}
-          >
-            {item.number}
-          </div>
-          <div className="flex-1">
-            <h3 className="font-bold mb-3" style={{fontSize: '28px'}}>
-              {item.title}
-            </h3>
-            <span className="bg-white/20 px-4 py-2 rounded text-white font-semibold" style={{fontSize: '14px'}}>
-              Using: {item.tech}
-            </span>
-          </div>
+    <div className="flex items-start space-x-6 py-6">
+      {/* Icon */}
+      <div className="flex-shrink-0">
+        <div 
+          className="w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center text-white text-xl font-bold"
+        >
+          {item.icon}
         </div>
       </div>
-
-      {/* Expanded content section */}
-      <div 
-        className={`bg-white p-8 transition-all duration-500 ease-in-out overflow-hidden ${
-          isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-        }`}
-      >
-        <div className="space-y-6">
-          <div>
-            <h4 className="font-bold text-gray-800 mb-3" style={{fontSize: '18px'}}>What to do:</h4>
-            <p className="text-gray-700 leading-relaxed" style={{fontSize: '16px'}}>{item.what}</p>
-          </div>
-          <div>
-            <h4 className="font-bold text-gray-800 mb-3" style={{fontSize: '18px'}}>Result:</h4>
-            <p className="text-gray-700 leading-relaxed" style={{fontSize: '16px'}}>{item.result}</p>
-          </div>
-        </div>
+      
+      {/* Content */}
+      <div className="flex-1">
+        <h3 className="font-bold text-gray-900 mb-3" style={{fontSize: '24px'}}>
+          {item.title}
+        </h3>
+        <p className="text-gray-600 leading-relaxed" style={{fontSize: '16px'}}>
+          {item.description}
+        </p>
       </div>
     </div>
   );
