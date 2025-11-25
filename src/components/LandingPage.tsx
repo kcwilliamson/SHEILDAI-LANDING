@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useShapesAnimation } from '../hooks/useShapesAnimation';
@@ -241,55 +241,36 @@ export default function LandingPage() {
               Generative AI doesn't create ideas out of thin air—it builds them based on yours
             </p>
             
-            <p className="text-gray-200 leading-relaxed mb-10" style={{fontSize: '18px'}}>
+            <p className="text-gray-200 leading-relaxed mb-16" style={{fontSize: '18px'}}>
               Imagine every photo, article, video, and line of code you have ever created. AI models are trained by analyzing these vast collections of human work. They scan your unique content to learn the fundamental rules of style, language, and structure. Essentially, your high-quality work serves as the training data that teaches the AI how to be creative.
             </p>
-          </div>
-          
-          <div className="bg-black/40 backdrop-blur-sm p-10 rounded-lg mt-8">
+
             <h3 className="font-bold text-white mb-6 leading-tight" style={{fontSize: '40px'}}>In this model, you lose</h3>
-            <p className="text-gray-200 leading-relaxed mb-8" style={{fontSize: '18px'}}>
-              While your content is what makes these systems intelligent, the value is flowing in only one direction.
-            </p>
             
-            <ul className="space-y-6 text-gray-200 max-w-3xl mx-auto" style={{fontSize: '18px'}}>
-              <li className="flex items-start text-left">
-                <span className="text-orange-400 font-bold mr-4 mt-1" style={{fontSize: '24px'}}>•</span>
-                <div>
-                  <span 
-                    className="highlight-phrase relative inline-block font-semibold text-white" 
-                    style={{position: 'relative'}}
-                  >
-                    <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#FF8C00', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
-                    <span className="relative z-10">Unauthorized Scraping:</span>
-                  </span> Your work is being harvested to build commercial models without your credit, attribution, or consent.
-                </div>
-              </li>
-              <li className="flex items-start text-left">
-                <span className="text-blue-400 font-bold mr-4 mt-1" style={{fontSize: '24px'}}>•</span>
-                <div>
-                  <span 
-                    className="highlight-phrase relative inline-block font-semibold text-white" 
-                    style={{position: 'relative'}}
-                  >
-                    <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#4A90E2', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
-                    <span className="relative z-10">No Compensation:</span>
-                  </span> Tech giants are profiting from your creativity without offering direct payment.
-                </div>
-              </li>
-              <li className="flex items-start text-left">
-                <span className="text-red-400 font-bold mr-4 mt-1" style={{fontSize: '24px'}}>•</span>
-                <div>
-                  <span 
-                    className="highlight-phrase relative inline-block font-semibold text-white" 
-                    style={{position: 'relative'}}
-                  >
-                    <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#E91E63', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
-                    <span className="relative z-10">Lost Monetization:</span>
-                  </span> Most dangerously, these AI models use your own style to generate competing content. This bypasses your platform entirely, diverting traffic and breaking your traditional revenue streams.
-                </div>
-              </li>
-            </ul>
+            <p className="text-gray-200 leading-relaxed mb-8" style={{fontSize: '18px'}}>
+              While your content is what makes these systems intelligent, the value is flowing in only one direction. 
+              <span 
+                className="highlight-phrase relative inline-block font-semibold text-white ml-1" 
+                style={{position: 'relative'}}
+              >
+                <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#FF8C00', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
+                <span className="relative z-10">Unauthorized Scraping</span>
+              </span> means your work is being harvested to build commercial models without your credit, attribution, or consent. 
+              <span 
+                className="highlight-phrase relative inline-block font-semibold text-white ml-1" 
+                style={{position: 'relative'}}
+              >
+                <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#4A90E2', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
+                <span className="relative z-10">No Compensation</span>
+              </span> occurs as tech giants profit from your creativity without offering direct payment. Most dangerously, 
+              <span 
+                className="highlight-phrase relative inline-block font-semibold text-white ml-1" 
+                style={{position: 'relative'}}
+              >
+                <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#E91E63', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
+                <span className="relative z-10">Lost Monetization</span>
+              </span> happens when AI models use your own style to generate competing content, bypassing your platform entirely and diverting traffic while breaking your traditional revenue streams.
+            </p>
             
             <p className="text-white font-semibold mt-8 leading-relaxed" style={{fontSize: '20px'}}>
               In short: You provide the intelligence, but the AI captures the value.
@@ -306,66 +287,66 @@ export default function LandingPage() {
             How to fight back
           </h2>
           
-          <div className="border-2 border-black rounded-2xl overflow-hidden shadow-lg">
+          <div className="p-10 bg-white shadow-lg">
             {[
               {
                 title: "Tell the good bots what not to see",
                 tech: "robots.txt",
                 what: "Have a small, hidden file on your website that politely tells major search engines (like Google) not to show certain pages in their search results.",
                 result: "Prevents pages you don't want public (like your admin area or duplicate content) from being indexed, but won't stop bad guys.",
-                color: "bg-red-100 border-red-400 hover:bg-red-200"
+                color: "#FF8C00", number: "1"
               },
               {
                 title: "Set a speed limit for visitors",
                 tech: "Rate Limiting",
                 what: "Program your website to notice when one computer asks for content too quickly, too many times in a row.",
                 result: "If a computer tries to download your whole site in a minute, your site will slow them down or temporarily block them, protecting your bandwidth.",
-                color: "bg-blue-100 border-blue-400 hover:bg-blue-200"
+                color: "#4A90E2", number: "2"
               },
               {
                 title: "Block known troublemakers",
                 tech: "IP and User-Agent Blocking",
                 what: "If you see a specific computer address (IP) or software signature (User-Agent) that keeps stealing content, use a security tool to block them completely.",
                 result: "Stops known scrapers and their tools from ever loading your pages again.",
-                color: "bg-green-100 border-green-400 hover:bg-green-200"
+                color: "#00CED1", number: "3"
               },
               {
                 title: "Ask a simple human test question",
                 tech: "CAPTCHAs",
                 what: "Put up a simple challenge (like \"click all the traffic lights\" or \"type the wavy letters\") before someone can access the content.",
                 result: "Stops basic automated programs, because they can't see or solve the visual puzzle.",
-                color: "bg-purple-100 border-purple-400 hover:bg-purple-200"
+                color: "#C147E9", number: "4"
               },
               {
                 title: "Require a \"secret handshake\"",
                 tech: "JavaScript and API Keys",
                 what: "For special, programmatic access to your content, only allow it if the user provides a unique, authorized digital code (the API Key). You can also add hidden code that only a standard web browser can execute.",
                 result: "Ensures only approved users or apps can access your data, and simple scrapers that don't run website code fail to load the content.",
-                color: "bg-yellow-100 border-yellow-400 hover:bg-yellow-200"
+                color: "#E91E63", number: "5"
               },
               {
                 title: "Make the stolen content useless",
                 tech: "Content Obfuscation",
                 what: "Add invisible digital watermarks or unique tracking codes to your text and images.",
                 result: "If someone steals your content and puts it on their site, you can prove it's yours and trace exactly where they got it.",
-                color: "bg-pink-100 border-pink-400 hover:bg-pink-200"
+                color: "#FF8C00", number: "6"
               },
               {
                 title: "Watch for suspicious activity",
                 tech: "Monitoring and Analysis",
                 what: "Regularly look at your website traffic reports to spot strange behavior—like one user visiting 5,000 pages in an hour or accessing pages in a weird order.",
                 result: "Allows you to catch new scrapers before they cause major damage and block them quickly.",
-                color: "bg-teal-100 border-teal-400 hover:bg-teal-200"
+                color: "#4A90E2", number: "7"
               }
             ].map((item, index, array) => (
-              <AccordionItem key={index} item={item} isLast={index === array.length - 1} />
+              <NumberedItem key={index} item={item} isLast={index === array.length - 1} />
             ))}
           </div>
         </div>
       </section>
 
       {/* Section 4: Get Started with Cloudflare */}
-      <section className="relative py-20 px-6 bg-white">
+      <section className="relative py-20 px-6 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="font-bold text-black mb-8 leading-tight" style={{fontSize: '40px'}}>
@@ -424,40 +405,34 @@ export default function LandingPage() {
   );
 }
 
-// Accordion Item Component
-function AccordionItem({ item, isLast }: { item: any; isLast: boolean }) {
-  const [isOpen, setIsOpen] = useState(false);
-
+// Numbered Item Component
+function NumberedItem({ item, isLast }: { item: any; isLast: boolean }) {
   return (
-    <div className={`${item.color || 'bg-white'} ${!isLast ? 'border-b border-gray-200' : ''}`}>
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className={`w-full text-left px-6 py-5 flex items-center justify-between transition-colors group ${item.color ? item.color.split(' ')[2] : 'hover:bg-gray-50'}`}
-      >
-        <div>
-          <h3 className="font-bold text-gray-900 transition-colors" style={{fontSize: '18px'}}>
+    <div className={`py-6 ${!isLast ? 'border-b border-gray-200' : ''}`}>
+      <div className="flex items-start">
+        <div 
+          className="font-bold mr-8 flex-shrink-0"
+          style={{ color: item.color, fontSize: '120px', lineHeight: '1' }}
+        >
+          {item.number}
+        </div>
+        <div className="flex-1">
+          <h3 className="font-bold text-gray-900 mb-2" style={{fontSize: '24px'}}>
             {item.title}
           </h3>
-          <span className="text-gray-500 bg-white px-2 py-1 rounded mt-1 inline-block border border-gray-300" style={{fontSize: '12px'}}>
+          <span className="text-gray-500 bg-gray-100 px-3 py-1 rounded text-sm mb-4 inline-block">
             Using: {item.tech}
           </span>
-        </div>
-        <div className={`transform transition-transform duration-300 text-gray-600 ${isOpen ? 'rotate-180' : ''}`}>
-          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </div>
-      </button>
-      
-      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
-        <div className={`px-6 pb-6 pt-2 text-gray-700 space-y-4 ${item.color || 'bg-gray-50'}`}>
-          <div>
-            <span className="font-bold text-gray-800 block mb-1" style={{fontSize: '14px'}}>What to do:</span>
-            <p style={{fontSize: '14px'}}>{item.what}</p>
-          </div>
-          <div>
-            <span className="font-bold text-gray-800 block mb-1" style={{fontSize: '14px'}}>Result:</span>
-            <p style={{fontSize: '14px'}}>{item.result}</p>
+          
+          <div className="space-y-4 mt-4">
+            <div>
+              <span className="font-bold text-gray-800 block mb-2" style={{fontSize: '16px'}}>What to do:</span>
+              <p className="text-gray-700 leading-relaxed" style={{fontSize: '16px'}}>{item.what}</p>
+            </div>
+            <div>
+              <span className="font-bold text-gray-800 block mb-2" style={{fontSize: '16px'}}>Result:</span>
+              <p className="text-gray-700 leading-relaxed" style={{fontSize: '16px'}}>{item.result}</p>
+            </div>
           </div>
         </div>
       </div>
