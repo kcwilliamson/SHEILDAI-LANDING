@@ -94,33 +94,20 @@ export default function LandingPage() {
         }
       });
 
-      // Fade animation to grey when reaching "In this model, you lose" section
-      ScrollTrigger.create({
-        trigger: "#lose-section",
-        start: "30% center",
-        onEnter: () => {
-          if (isColorfulRef.current) {
-            // Gradually transform shapes back to grey
-            transformToGrey();
-            isColorfulRef.current = false;
-          }
-        },
-        onLeaveBack: () => {
-          if (!isColorfulRef.current) {
-            // Return to colorful when scrolling back up
-            transformToColorful();
-            continueShapesInBackground();
-            isColorfulRef.current = true;
-          }
-        }
-      });
+      // Keep shapes colorful throughout - no transformation back to grey
     };
 
     // Initialize the page
     initializeShapes();
     createScrollTriggeredAnimation();
 
-    
+    // Transform shapes after 5 seconds and keep them colorful
+    gsap.delayedCall(5, () => {
+      if (!isColorfulRef.current) {
+        transformToColorful();
+        isColorfulRef.current = true;
+      }
+    });
 
     // Looping highlight animations for lose section
     const startHighlightLoop = () => {
@@ -246,88 +233,73 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Section 2: Your content fuels AI */}
+      {/* Section 2: Understanding the Threat */}
       <section className="relative bg-transparent flex items-center justify-center px-6 py-16 z-10">
         <div className="max-w-4xl text-center">
-          <h2 className="font-bold text-white mb-8 text-center leading-tight" style={{fontSize: '26px'}}>
-            Your content fuels AI
-          </h2>
-          <div className="space-y-6 text-gray-200 leading-relaxed text-center mx-auto p-8 bg-black/40 backdrop-blur-sm rounded-lg" style={{fontSize: '16px'}}>
-            <p>
-              Imagine all the photos, articles, videos, and code you and 
-              millions of others have ever created. Your unique, high-quality 
-              work isn&apos;t just viewed by people—it&apos;s being analyzed and 
-              absorbed by modern AI systems.
+          <div className="bg-black/40 backdrop-blur-sm p-10 rounded-lg">
+            <p className="font-bold text-white mb-10 leading-tight" style={{fontSize: '40px'}}>
+              Generative AI doesn't create ideas out of thin air—it builds them based on yours
             </p>
-            <p className="font-semibold text-white">
-              Essentially, your content is the fuel for Generative AI.
+            
+            <p className="text-gray-200 leading-relaxed mb-10" style={{fontSize: '18px'}}>
+              Imagine every photo, article, video, and line of code you have ever created. AI models are trained by analyzing these vast collections of human work. They scan your unique content to learn the fundamental rules of style, language, and structure. Essentially, your high-quality work serves as the training data that teaches the AI how to be creative.
             </p>
-            <p>
-              These systems look at the vast collection of human creativity to 
-              learn the fundamental rules of style, language, and structure, 
-              allowing the AI to then create its own intelligent content and 
-              improve the collective knowledge base.
+          </div>
+          
+          <div className="bg-black/40 backdrop-blur-sm p-10 rounded-lg mt-8">
+            <h3 className="font-bold text-white mb-6 leading-tight" style={{fontSize: '40px'}}>In this model, you lose</h3>
+            <p className="text-gray-200 leading-relaxed mb-8" style={{fontSize: '18px'}}>
+              While your content is what makes these systems intelligent, the value is flowing in only one direction.
+            </p>
+            
+            <ul className="space-y-6 text-gray-200 max-w-3xl mx-auto" style={{fontSize: '18px'}}>
+              <li className="flex items-start text-left">
+                <span className="text-orange-400 font-bold mr-4 mt-1" style={{fontSize: '24px'}}>•</span>
+                <div>
+                  <span 
+                    className="highlight-phrase relative inline-block font-semibold text-white" 
+                    style={{position: 'relative'}}
+                  >
+                    <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#FF8C00', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
+                    <span className="relative z-10">Unauthorized Scraping:</span>
+                  </span> Your work is being harvested to build commercial models without your credit, attribution, or consent.
+                </div>
+              </li>
+              <li className="flex items-start text-left">
+                <span className="text-blue-400 font-bold mr-4 mt-1" style={{fontSize: '24px'}}>•</span>
+                <div>
+                  <span 
+                    className="highlight-phrase relative inline-block font-semibold text-white" 
+                    style={{position: 'relative'}}
+                  >
+                    <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#4A90E2', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
+                    <span className="relative z-10">No Compensation:</span>
+                  </span> Tech giants are profiting from your creativity without offering direct payment.
+                </div>
+              </li>
+              <li className="flex items-start text-left">
+                <span className="text-red-400 font-bold mr-4 mt-1" style={{fontSize: '24px'}}>•</span>
+                <div>
+                  <span 
+                    className="highlight-phrase relative inline-block font-semibold text-white" 
+                    style={{position: 'relative'}}
+                  >
+                    <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#E91E63', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
+                    <span className="relative z-10">Lost Monetization:</span>
+                  </span> Most dangerously, these AI models use your own style to generate competing content. This bypasses your platform entirely, diverting traffic and breaking your traditional revenue streams.
+                </div>
+              </li>
+            </ul>
+            
+            <p className="text-white font-semibold mt-8 leading-relaxed" style={{fontSize: '20px'}}>
+              In short: You provide the intelligence, but the AI captures the value.
             </p>
           </div>
         </div>
       </section>
 
 
-      {/* Section 3: In this model, you lose */}
-      <section id="lose-section" className="relative min-h-screen bg-transparent flex items-center justify-center px-6 z-10">
-        <div className="grid grid-cols-12 w-full">
-          <div className="col-start-3 col-span-8 text-center flex flex-col items-center justify-center">
-            <h2 className="font-bold text-white mb-12 leading-[0.9] p-4" style={{fontSize: '75px'}}>
-              In this model, you lose
-            </h2>
-            <div className="max-w-4xl bg-black/40 backdrop-blur-sm p-8 rounded-lg">
-              <p className="text-white leading-relaxed text-center mx-auto" style={{fontSize: '16px'}}>
-                Your <span 
-                  className="highlight-phrase relative inline-block" 
-                  data-highlight="orange"
-                  style={{position: 'relative'}}
-                >
-                  <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#FF8C00', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
-                  <span className="relative z-10">original content</span>
-                </span> fundamentally enables modern AI by serving as the massive training 
-                data set from which systems learn human creativity and style. The core issue is that your 
-                work <span 
-                  className="highlight-phrase relative inline-block" 
-                  data-highlight="purple"
-                  style={{position: 'relative'}}
-                >
-                  <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#C147E9', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
-                  <span className="relative z-10">is being scraped</span>
-                </span> and used commercially to build these AI models <span 
-                  className="highlight-phrase relative inline-block" 
-                  data-highlight="green"
-                  style={{position: 'relative'}}
-                >
-                  <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#00CED1', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
-                  <span className="relative z-10">without credit</span>
-                </span>, <span 
-                  className="highlight-phrase relative inline-block" 
-                  data-highlight="blue"
-                  style={{position: 'relative'}}
-                >
-                  <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#4A90E2', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
-                  <span className="relative z-10">attribution</span>
-                </span>, or <span 
-                  className="highlight-phrase relative inline-block" 
-                  data-highlight="pink"
-                  style={{position: 'relative'}}
-                >
-                  <span className="highlight-bg absolute inset-0 w-full opacity-60" style={{backgroundColor: '#E91E63', zIndex: -1, transform: 'scaleX(0)', transformOrigin: 'left center'}}></span>
-                  <span className="relative z-10">direct payment</span>
-                </span>, allowing the AI to generate competing content that 
-                bypasses your platform and effectively breaks your traditional monetization stream.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 4: Content Protection Options */}
+      {/* Section 3: Content Protection Options */}
       <section id="protection-section" className="relative min-h-screen bg-white flex flex-col items-center justify-center px-6 py-20">
         <div className="max-w-7xl mx-auto">
           <h2 className="font-bold text-black text-center mb-16 leading-tight" style={{fontSize: '26px'}}>
@@ -387,7 +359,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Section 5: Connect with Cloudflare */}
+      {/* Section 4: Connect with Cloudflare */}
       <section id="connect-section" className="relative min-h-screen bg-white flex items-center justify-center px-6 py-20">
         <div className="max-w-6xl mx-auto text-center">
           {/* Cloudflare Logo */}
