@@ -36,6 +36,12 @@ yarn-error.log*
 # vercel
 .vercel
 
+# astro
+/.astro/
+
+# build output
+/dist/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

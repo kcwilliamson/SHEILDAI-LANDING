@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useShapesAnimation } from '../hooks/useShapesAnimation';
@@ -7,6 +7,63 @@ export default function LandingPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isColorfulRef = useRef(false);
   const { canvasRef, transformToColorful, transformToGrey, continueShapesInBackground, exitShapes } = useShapesAnimation();
+  const [protectionLevel, setProtectionLevel] = useState(0);
+  const prevProtectionLevelRef = useRef(0);
+
+  const protectionHeadingGradientClass = useMemo(() => {
+    switch (protectionLevel) {
+      case 0:
+        return 'from-orange-500 to-red-500';
+      case 1:
+        return 'from-blue-500 to-purple-500';
+      case 2:
+        return 'from-green-500 to-teal-500';
+      case 3:
+      default:
+        return 'from-pink-500 to-fuchsia-500';
+    }
+  }, [protectionLevel]);
+
+  const protectionLevelGradientClass = useMemo(() => {
+    return [
+      'from-orange-500 to-red-500',
+      'from-blue-500 to-purple-500',
+      'from-green-500 to-teal-500',
+      'from-pink-500 to-fuchsia-500'
+    ];
+  }, []);
+
+  const protectionConfigs = useMemo(
+    () => [
+      {
+        name: 'Open for AI',
+        summary: 'Maximize discoverability. Allow known AI crawlers, but keep basic visibility into what is happening.',
+        products: ['AI Crawl Control (Allow rules)', 'Bot analytics / basic visibility'],
+        tips: ['Publish a clear AI policy page and link it in robots.txt', 'Monitor top user agents and crawl volume weekly']
+      },
+      {
+        name: 'Selective Access',
+        summary: 'Allow some bots and shape access to high-value routes. Protect sensitive paths without locking down your entire site.',
+        products: ['AI Crawl Control (Allow/Block by bot)', 'WAF rules for sensitive paths', 'Rate Limiting (moderate)'],
+        tips: ['Separate policies for /public vs /premium paths', 'Maintain an allowlist for beneficial crawlers']
+      },
+      {
+        name: 'Controlled',
+        summary: 'Default to deny for unknown automation. Challenge suspicious requests and tighten thresholds to reduce scraping at scale.',
+        products: ['Bot Management (advanced)', 'Challenge / Turnstile for suspicious traffic', 'Stricter anomaly thresholds'],
+        tips: ['Alert on spikes in bot-originated 2xx responses', 'Use session-based access to distinguish humans vs automation']
+      },
+      {
+        name: 'Locked down unless paid',
+        summary: 'Monetize access. If an AI agent wants content, require payment or a contract before granting crawl permission.',
+        products: ['Pay Per Crawl / Charge rules', '402 Payment Required enforcement', 'Contract-based API access (keys + quotas)'],
+        tips: ['Define pricing by route/value (e.g., premium archives)', 'Provide a paid API as the “right way” to access content']
+      }
+    ],
+    []
+  );
+
+  const visibleConfigs = protectionConfigs.slice(0, protectionLevel + 1);
 
   
   useEffect(() => {
@@ -197,6 +254,27 @@ export default function LandingPage() {
     };
   }, [transformToColorful, transformToGrey, continueShapesInBackground, exitShapes]);
 
+  useEffect(() => {
+    const prev = prevProtectionLevelRef.current;
+
+    if (protectionLevel > prev) {
+      const newLevels = Array.from({ length: protectionLevel - prev }, (_, i) => prev + i + 1);
+      gsap.delayedCall(0, () => {
+        newLevels.forEach((levelIdx) => {
+          const el = document.querySelector(`[data-protection-col="${levelIdx}"]`);
+          if (!el) return;
+          gsap.fromTo(
+            el,
+            { opacity: 0, y: 18 },
+            { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }
+          );
+        });
+      });
+    }
+
+    prevProtectionLevelRef.current = protectionLevel;
+  }, [protectionLevel]);
+
   return (
     <div ref={containerRef} className="min-h-screen">
       {/* Cloudflare Logo - Top Left */}
@@ -233,7 +311,7 @@ export default function LandingPage() {
           href="#section-4" 
           className="text-white hover:text-orange-400 font-semibold transition-colors px-3 py-2 rounded-md hover:bg-white/10"
         >
-          Best Practices
+          Protect Your Content
         </a>
       </nav>
 
@@ -311,7 +389,39 @@ export default function LandingPage() {
 
           {/* Video Carousel */}
           <div className="relative mb-16">
-            <div id="video-carousel" className="flex space-x-6 overflow-x-auto pb-4 scrollbar-hide">
+            {/* Left Arrow */}
+            <button 
+              id="carousel-left"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-black/60 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center hover:bg-orange-500/80 transition-all duration-300 hover:border-orange-400"
+              onClick={() => {
+                const carousel = document.getElementById('video-carousel');
+                if (carousel) {
+                  carousel.scrollBy({ left: -320, behavior: 'smooth' });
+                }
+              }}
+            >
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+
+            {/* Right Arrow */}
+            <button 
+              id="carousel-right"
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-black/60 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center hover:bg-orange-500/80 transition-all duration-300 hover:border-orange-400"
+              onClick={() => {
+                const carousel = document.getElementById('video-carousel');
+                if (carousel) {
+                  carousel.scrollBy({ left: 320, behavior: 'smooth' });
+                }
+              }}
+            >
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+
+            <div id="video-carousel" className="flex space-x-6 overflow-x-auto pb-4 scrollbar-hide scroll-smooth">
               {[
                 {
                   id: 1,
@@ -411,147 +521,138 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Section 4: How to fight back */}
+      {/* Section 4: Protect your content */}
       <section id="section-4" className="relative py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-6">
-          <h2 className="font-bold text-black text-center mb-16 leading-tight" style={{fontSize: '40px'}}>
-            How to fight back
-          </h2>
-          
-          <div className="space-y-8">
-            {[
-              {
-                title: "robots.txt",
-                icon: "⚙️",
-                gradient: "from-orange-400 to-red-500",
-                description: "Have a small, hidden file on your website that politely tells major search engines (like Google) not to show certain pages in their search results."
-              },
-              {
-                title: "Rate Limiting",
-                icon: "⚡",
-                gradient: "from-blue-400 to-purple-500",
-                description: "Program your website to notice when one computer asks for content too quickly, too many times in a row."
-              },
-              {
-                title: "IP & User-Agent Blocking",
-                icon: "🛡️",
-                gradient: "from-green-400 to-teal-500",
-                description: "If you see a specific computer address (IP) or software signature (User-Agent) that keeps stealing content, use a security tool to block them completely."
-              },
-              {
-                title: "JavaScript & API Keys",
-                icon: "🔐",
-                gradient: "from-purple-400 to-pink-500",
-                description: "For special, programmatic access to your content, only allow it if the user provides a unique, authorized digital code (the API Key)."
-              },
-              {
-                title: "Content Obfuscation",
-                icon: "👁️",
-                gradient: "from-yellow-400 to-orange-500",
-                description: "Add invisible digital watermarks or unique tracking codes to your text and images."
-              },
-              {
-                title: "Monitoring & Analysis",
-                icon: "📊",
-                gradient: "from-indigo-400 to-blue-500",
-                description: "Regularly look at your website traffic reports to spot strange behavior—like one user visiting 5,000 pages in an hour or accessing pages in a weird order."
-              }
-            ].map((item, index) => (
-              <ProtectionMethod key={index} item={item} />
-            ))}
+        <div className="w-full">
+          <div className="max-w-6xl mx-auto px-6">
+            <h2 className="font-bold text-center mb-8 leading-tight" style={{fontSize: '40px'}}>
+              <span className={`bg-gradient-to-r ${protectionHeadingGradientClass} bg-clip-text text-transparent`}>
+                How much protection do you need?
+              </span>
+            </h2>
           </div>
 
-          {/* Blog Posts Section */}
-          <div className="mt-20">
-            <h3 className="font-bold text-black text-center mb-12 leading-tight" style={{fontSize: '32px'}}>
-              Learn More: Cloudflare AI Protection Resources
-            </h3>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[
-                {
-                  title: "Introducing Bot Fight Mode",
-                  description: "How Cloudflare's free bot protection helps block malicious crawlers and scrapers from your website",
-                  date: "December 2024",
-                  readTime: "5 min read",
-                  category: "Security"
-                },
-                {
-                  title: "Rate Limiting for AI Scraping Prevention", 
-                  description: "Configure advanced rate limiting rules to protect your content from automated data collection",
-                  date: "November 2024",
-                  readTime: "7 min read",
-                  category: "Protection"
-                },
-                {
-                  title: "WAF Rules Against AI Crawlers",
-                  description: "Custom Web Application Firewall rules to identify and block AI training bots",
-                  date: "November 2024", 
-                  readTime: "8 min read",
-                  category: "Security"
-                },
-                {
-                  title: "Analytics for Bot Detection",
-                  description: "Use Cloudflare Analytics to identify suspicious traffic patterns and potential AI scrapers",
-                  date: "October 2024",
-                  readTime: "6 min read",
-                  category: "Analytics"
-                },
-                {
-                  title: "IP Intelligence and Reputation",
-                  description: "Leverage Cloudflare's threat intelligence to automatically block known scraping IPs",
-                  date: "October 2024",
-                  readTime: "4 min read",
-                  category: "Intelligence"
-                },
-                {
-                  title: "Page Rules for Content Protection",
-                  description: "Strategic page rules and redirects to prevent unauthorized access to valuable content",
-                  date: "September 2024",
-                  readTime: "5 min read",
-                  category: "Configuration"
-                }
-              ].map((post, index) => (
-                <article 
-                  key={index}
-                  className="bg-gray-50 border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow duration-300 hover:border-orange-200"
-                >
-                  <div className="mb-4">
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                      post.category === 'Security' ? 'bg-red-100 text-red-800' :
-                      post.category === 'Protection' ? 'bg-orange-100 text-orange-800' :
-                      post.category === 'Analytics' ? 'bg-blue-100 text-blue-800' :
-                      post.category === 'Intelligence' ? 'bg-purple-100 text-purple-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {post.category}
-                    </span>
-                  </div>
-                  
-                  <h4 className="font-bold text-gray-900 mb-3 text-lg leading-tight hover:text-orange-600 cursor-pointer">
-                    {post.title}
-                  </h4>
-                  
-                  <p className="text-gray-600 mb-4 text-sm leading-relaxed">
-                    {post.description}
-                  </p>
-                  
-                  <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>{post.date}</span>
-                    <span>{post.readTime}</span>
-                  </div>
-                </article>
-              ))}
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="relative py-4">
+              <input
+                type="range"
+                min={0}
+                max={3}
+                step={1}
+                value={protectionLevel}
+                onChange={(e) => setProtectionLevel(Number(e.target.value))}
+                aria-label="Protection level"
+                className="w-full accent-orange-500 h-2 cursor-grab active:cursor-grabbing"
+                style={{ touchAction: 'pan-y' }}
+              />
             </div>
 
+            <div className="mt-4 grid grid-cols-4 gap-2">
+              {protectionConfigs.map((c, idx) => (
+                <button
+                  key={c.name}
+                  type="button"
+                  onClick={() => setProtectionLevel(idx)}
+                  className="text-center"
+                >
+                  <div
+                    className={`mx-auto w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
+                      idx === protectionLevel
+                        ? `bg-gradient-to-r ${protectionLevelGradientClass[idx]} text-white shadow-lg`
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {idx + 1}
+                  </div>
+                  <div className={`mt-2 text-[11px] font-semibold leading-tight ${idx === protectionLevel ? 'text-gray-900' : 'text-gray-600'}`}>
+                    {c.name}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-12 max-w-6xl mx-auto px-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {visibleConfigs.map((cfg, cfgIdx) => (
+                <div
+                  key={cfg.name}
+                  data-protection-col={cfgIdx}
+                  className="border border-gray-200 rounded-2xl p-6 bg-white"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <div className="text-xs font-bold uppercase tracking-wide text-gray-500">Level {cfgIdx + 1}</div>
+                      <h3 className="font-bold text-gray-900 mt-1" style={{fontSize: '20px'}}>
+                        {cfg.name}
+                      </h3>
+                    </div>
+                    <div className={`w-9 h-9 rounded-full bg-gradient-to-r ${protectionLevelGradientClass[cfgIdx]} text-white font-bold flex items-center justify-center flex-shrink-0`}>
+                      {cfgIdx + 1}
+                    </div>
+                  </div>
+
+                  <p className="text-gray-700 mt-3 leading-relaxed" style={{fontSize: '14px'}}>
+                    {cfg.summary}
+                  </p>
+
+                  <div className="mt-5">
+                    <div className="text-[11px] font-bold uppercase tracking-wide text-gray-500">Products</div>
+                    <div className="mt-3 space-y-3">
+                      {cfg.products.map((p, i) => (
+                        <div key={`${cfg.name}-p-${i}`} className="flex items-start gap-3">
+                          <div
+                            className={`mt-1 w-3 h-3 rounded-full bg-gradient-to-r ${
+                              (cfgIdx + i) % 4 === 0
+                                ? 'from-orange-500 to-red-500'
+                                : (cfgIdx + i) % 4 === 1
+                                  ? 'from-blue-500 to-purple-500'
+                                  : (cfgIdx + i) % 4 === 2
+                                    ? 'from-green-500 to-teal-500'
+                                    : 'from-pink-500 to-fuchsia-500'
+                            } flex-shrink-0`}
+                          />
+                          <div className="text-gray-800" style={{fontSize: '14px'}}>
+                            {p}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="mt-5 text-[11px] font-bold uppercase tracking-wide text-gray-500">Tips</div>
+                    <div className="mt-3 space-y-3">
+                      {cfg.tips.map((t, i) => (
+                        <div key={`${cfg.name}-t-${i}`} className="flex items-start gap-3">
+                          <div
+                            className={`mt-1 w-3 h-3 rounded-full bg-gradient-to-r ${
+                              (cfgIdx + i + 2) % 4 === 0
+                                ? 'from-orange-500 to-red-500'
+                                : (cfgIdx + i + 2) % 4 === 1
+                                  ? 'from-blue-500 to-purple-500'
+                                  : (cfgIdx + i + 2) % 4 === 2
+                                    ? 'from-green-500 to-teal-500'
+                                    : 'from-pink-500 to-fuchsia-500'
+                            } flex-shrink-0`}
+                          />
+                          <div className="text-gray-800" style={{fontSize: '14px'}}>
+                            {t}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="max-w-6xl mx-auto px-6">
             <div className="text-center mt-12">
-              <a 
-                href="https://blog.cloudflare.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
+              <a
+                href="#"
                 className="bg-orange-500 text-white px-8 py-3 rounded-lg hover:bg-orange-600 font-semibold transition-all duration-200 shadow-md hover:shadow-lg inline-block"
               >
-                View All Blog Posts
+                Talk to Cloudflare about your policy
               </a>
             </div>
           </div>
@@ -561,30 +662,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
-// Protection Method Component
-function ProtectionMethod({ item }: { item: any }) {
-  return (
-    <div className="flex items-start space-x-6 py-6">
-      {/* Icon */}
-      <div className="flex-shrink-0">
-        <div 
-          className={`w-12 h-12 rounded-full bg-gradient-to-r ${item.gradient} flex items-center justify-center text-white text-xl`}
-        >
-          {item.icon}
-        </div>
-      </div>
-      
-      {/* Content */}
-      <div className="flex-1">
-        <h3 className="font-bold text-gray-900 mb-3" style={{fontSize: '24px'}}>
-          {item.title}
-        </h3>
-        <p className="text-gray-600 leading-relaxed" style={{fontSize: '16px'}}>
-          {item.description}
-        </p>
-      </div>
-    </div>
-  );
-}
-
