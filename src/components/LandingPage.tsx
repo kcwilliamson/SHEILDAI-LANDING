@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useEffect, useRef, useState, useMemo } from 'react';
+import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
 import { useShapesAnimation } from '../hooks/useShapesAnimation';
 
 export default function LandingPage() {
@@ -67,10 +67,11 @@ export default function LandingPage() {
 
   
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-    
-    // Initialize with grey shapes and text
-    const initializeShapes = () => {
+    try {
+      gsap.registerPlugin(ScrollTrigger);
+      
+      // Initialize with grey shapes and text
+      const initializeShapes = () => {
       // Start with grey connected shapes
       transformToGrey();
       
@@ -249,8 +250,16 @@ export default function LandingPage() {
       }
     });
 
+    } catch (e) {
+      console.error('LandingPage animation error:', e);
+    }
+
     return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      try {
+        ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      } catch (e) {
+        // ignore cleanup errors
+      }
     };
   }, [transformToColorful, transformToGrey, continueShapesInBackground, exitShapes]);
 

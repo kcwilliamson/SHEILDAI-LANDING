@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
+import gsap from 'gsap';
 
 interface Shape {
   x: number;
@@ -33,7 +33,25 @@ export const useShapesAnimation = () => {
 
   const createShape = (id: number): Shape => {
     const canvas = canvasRef.current;
-    if (!canvas) throw new Error('Canvas not found');
+    // Return a default shape if canvas is not available yet to avoid crashing
+    if (!canvas) {
+        return {
+          x: 0,
+          y: 0,
+          vx: 0,
+          vy: 0,
+          size: 0,
+          type: 'circle',
+          color: colors.grey,
+          originalColor: colors.colorful[id % colors.colorful.length],
+          id,
+          centerX: 0,
+          centerY: 0,
+          floatRadius: 0,
+          floatSpeed: 0,
+          floatAngle: 0
+        };
+    }
 
     // Predefined network positions around the center text area
     const networkPositions = [
@@ -115,7 +133,20 @@ export const useShapesAnimation = () => {
         const x = shape.x - shape.size / 2;
         const y = shape.y - shape.size / 2;
         ctx.beginPath();
-        ctx.roundRect(x, y, shape.size, shape.size, radius);
+        if (typeof ctx.roundRect === 'function') {
+          ctx.roundRect(x, y, shape.size, shape.size, radius);
+        } else {
+          // Fallback for browsers that don't support roundRect
+          ctx.moveTo(x + radius, y);
+          ctx.lineTo(x + shape.size - radius, y);
+          ctx.quadraticCurveTo(x + shape.size, y, x + shape.size, y + radius);
+          ctx.lineTo(x + shape.size, y + shape.size - radius);
+          ctx.quadraticCurveTo(x + shape.size, y + shape.size, x + shape.size - radius, y + shape.size);
+          ctx.lineTo(x + radius, y + shape.size);
+          ctx.quadraticCurveTo(x, y + shape.size, x, y + shape.size - radius);
+          ctx.lineTo(x, y + radius);
+          ctx.quadraticCurveTo(x, y, x + radius, y);
+        }
         ctx.fill();
         break;
     }

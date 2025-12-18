@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
+import gsap from 'gsap';
 
 interface Ant {
   x: number;
@@ -20,11 +20,21 @@ export const useAntAnimation = () => {
   const backgroundColorRef = useRef('#8B5CF6'); // Start with purple
   const antImageRef = useRef<HTMLImageElement | null>(null);
 
-  const antColor = '#F6821F'; // Orange color for ants
-
   const createAnt = (id: number): Ant => {
     const canvas = canvasRef.current;
-    if (!canvas) throw new Error('Canvas not found');
+    
+    // Fallback if canvas is not ready
+    if (!canvas) {
+      return {
+        x: 0,
+        y: 0,
+        vx: 0,
+        vy: 0,
+        size: 0,
+        rotation: 0,
+        id
+      };
+    }
 
     return {
       x: canvas.width * 0.7 + Math.random() * (canvas.width * 0.25), // Start from right side of larger canvas
@@ -153,7 +163,7 @@ export const useAntAnimation = () => {
     backgroundColorRef.current = '#8B5CF6'; // Reset to purple
   };
 
-  const startSequentialAntAnimation = (onAllAntsMove: () => void) => {
+  const startSequentialAntAnimation = () => {
     // Clear any existing ants
     antsRef.current = [];
     
