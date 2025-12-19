@@ -589,22 +589,6 @@ export default function LandingPage() {
               ))}
             </div>
           </div>
-
-          {/* Call to Action */}
-          <div className="text-center">
-            <div className="bg-black/40 backdrop-blur-sm rounded-xl p-8 border border-white/20">
-              <p className="text-gray-200 mb-6 leading-relaxed" style={{fontSize: '18px'}}>
-                These conversations highlight the urgent need for content protection in the age of AI
-              </p>
-              <a 
-                href="#section-4"
-                className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-4 rounded-lg hover:from-orange-600 hover:to-red-600 font-bold transition-all duration-200 shadow-lg hover:shadow-xl inline-block"
-                style={{fontSize: '18px'}}
-              >
-                Learn How to Protect Your Content
-              </a>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -736,10 +720,11 @@ export default function LandingPage() {
           <div className="max-w-6xl mx-auto px-6">
             <div className="text-center mt-12">
               <a
-                href="#"
-                className="bg-orange-500 text-white px-8 py-3 rounded-lg hover:bg-orange-600 font-semibold transition-all duration-200 shadow-md hover:shadow-lg inline-block"
+                href="#resources-section"
+                className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-4 rounded-lg hover:from-orange-600 hover:to-red-600 font-bold transition-all duration-200 shadow-lg hover:shadow-xl inline-block"
+                style={{fontSize: '18px'}}
               >
-                Talk to Cloudflare about your policy
+                Learn How to Protect Your Content
               </a>
             </div>
           </div>
@@ -747,7 +732,7 @@ export default function LandingPage() {
       </section>
 
       {/* Section 5: Blog/Resources */}
-      <section id="resources-section" className="relative py-20 bg-gray-50 border-t border-gray-200">
+      <section id="resources-section" className="relative py-20 bg-gradient-to-b from-gray-50 to-white border-t border-gray-200">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="font-bold text-center mb-12 text-gray-900 leading-tight" style={{fontSize: '40px'}}>
             Learn more about AI & Content Protection
