@@ -592,6 +592,22 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Call to Action */}
+      <div className="text-center">
+        <div className="bg-black/40 backdrop-blur-sm rounded-xl p-8 border border-white/20">
+          <p className="text-gray-200 mb-6 leading-relaxed" style={{fontSize: '18px'}}>
+            These conversations highlight the urgent need for content protection in the age of AI
+          </p>
+          <a 
+            href="#section-4"
+            className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-4 rounded-lg hover:from-orange-600 hover:to-red-600 font-bold transition-all duration-200 shadow-lg hover:shadow-xl inline-block"
+            style={{fontSize: '18px'}}
+          >
+            Learn How to Protect Your Content
+          </a>
+        </div>
+      </div>
+
       {/* Section 4: Protect your content */}
       <section id="section-4" className="relative py-20 bg-white">
         <div className="w-full">
@@ -616,30 +632,20 @@ export default function LandingPage() {
                 className="w-full accent-orange-500 h-2 cursor-grab active:cursor-grabbing"
                 style={{ touchAction: 'pan-y' }}
               />
-            </div>
-
-            <div className="mt-4 grid grid-cols-4 gap-2">
-              {protectionConfigs.map((c, idx) => (
-                <button
-                  key={c.name}
-                  type="button"
-                  onClick={() => setProtectionLevel(idx)}
-                  className="text-center"
-                >
-                  <div
-                    className={`mx-auto w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
-                      idx === protectionLevel
-                        ? `bg-gradient-to-r ${protectionLevelGradientClass[idx]} text-white shadow-lg`
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              <div className="flex justify-between mt-2 px-1">
+                {[0, 1, 2, 3].map((val) => (
+                  <button
+                    key={val}
+                    type="button"
+                    onClick={() => setProtectionLevel(val)}
+                    className={`text-sm font-bold transition-colors duration-200 ${
+                      val === protectionLevel ? 'text-orange-500 scale-110' : 'text-gray-400 hover:text-gray-600'
                     }`}
                   >
-                    {idx + 1}
-                  </div>
-                  <div className={`mt-2 text-[11px] font-semibold leading-tight ${idx === protectionLevel ? 'text-gray-900' : 'text-gray-600'}`}>
-                    {c.name}
-                  </div>
-                </button>
-              ))}
+                    {val + 1}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -649,63 +655,40 @@ export default function LandingPage() {
                 <div
                   key={cfg.name}
                   data-protection-col={cfgIdx}
-                  className="border border-gray-200 rounded-2xl p-6 bg-white"
+                  className={`border border-white/20 rounded-2xl p-6 shadow-xl bg-gradient-to-br ${protectionLevelGradientClass[cfgIdx]} text-white`}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <div className="text-xs font-bold uppercase tracking-wide text-gray-500">Level {cfgIdx + 1}</div>
-                      <h3 className="font-bold text-gray-900 mt-1" style={{fontSize: '20px'}}>
+                      <div className="text-xs font-bold uppercase tracking-wide text-white/80">Level {cfgIdx + 1}</div>
+                      <h3 className="font-bold text-white mt-1" style={{fontSize: '20px'}}>
                         {cfg.name}
                       </h3>
                     </div>
-                    <div className={`w-9 h-9 rounded-full bg-gradient-to-r ${protectionLevelGradientClass[cfgIdx]} text-white font-bold flex items-center justify-center flex-shrink-0`}>
-                      {cfgIdx + 1}
-                    </div>
                   </div>
 
-                  <p className="text-gray-700 mt-3 leading-relaxed" style={{fontSize: '14px'}}>
+                  <p className="text-white/90 mt-3 leading-relaxed" style={{fontSize: '14px'}}>
                     {cfg.summary}
                   </p>
 
                   <div className="mt-5">
-                    <div className="text-[11px] font-bold uppercase tracking-wide text-gray-500">Products</div>
+                    <div className="text-[11px] font-bold uppercase tracking-wide text-white/80">Products</div>
                     <div className="mt-3 space-y-3">
                       {cfg.products.map((p, i) => (
                         <div key={`${cfg.name}-p-${i}`} className="flex items-start gap-3">
-                          <div
-                            className={`mt-1 w-3 h-3 rounded-full bg-gradient-to-r ${
-                              (cfgIdx + i) % 4 === 0
-                                ? 'from-orange-500 to-red-500'
-                                : (cfgIdx + i) % 4 === 1
-                                  ? 'from-blue-500 to-purple-500'
-                                  : (cfgIdx + i) % 4 === 2
-                                    ? 'from-green-500 to-teal-500'
-                                    : 'from-pink-500 to-fuchsia-500'
-                            } flex-shrink-0`}
-                          />
-                          <div className="text-gray-800" style={{fontSize: '14px'}}>
+                          <div className="mt-1 w-3 h-3 rounded-full bg-white flex-shrink-0" />
+                          <div className="text-white" style={{fontSize: '14px'}}>
                             {p}
                           </div>
                         </div>
                       ))}
                     </div>
 
-                    <div className="mt-5 text-[11px] font-bold uppercase tracking-wide text-gray-500">Tips</div>
+                    <div className="mt-5 text-[11px] font-bold uppercase tracking-wide text-white/80">Tips</div>
                     <div className="mt-3 space-y-3">
                       {cfg.tips.map((t, i) => (
                         <div key={`${cfg.name}-t-${i}`} className="flex items-start gap-3">
-                          <div
-                            className={`mt-1 w-3 h-3 rounded-full bg-gradient-to-r ${
-                              (cfgIdx + i + 2) % 4 === 0
-                                ? 'from-orange-500 to-red-500'
-                                : (cfgIdx + i + 2) % 4 === 1
-                                  ? 'from-blue-500 to-purple-500'
-                                  : (cfgIdx + i + 2) % 4 === 2
-                                    ? 'from-green-500 to-teal-500'
-                                    : 'from-pink-500 to-fuchsia-500'
-                            } flex-shrink-0`}
-                          />
-                          <div className="text-gray-800" style={{fontSize: '14px'}}>
+                          <div className="mt-1 w-3 h-3 rounded-full bg-white flex-shrink-0" />
+                          <div className="text-white" style={{fontSize: '14px'}}>
                             {t}
                           </div>
                         </div>
@@ -716,23 +699,11 @@ export default function LandingPage() {
               ))}
             </div>
           </div>
-
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="text-center mt-12">
-              <a
-                href="#resources-section"
-                className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-4 rounded-lg hover:from-orange-600 hover:to-red-600 font-bold transition-all duration-200 shadow-lg hover:shadow-xl inline-block"
-                style={{fontSize: '18px'}}
-              >
-                Learn How to Protect Your Content
-              </a>
-            </div>
-          </div>
         </div>
       </section>
 
       {/* Section 5: Blog/Resources */}
-      <section id="resources-section" className="relative py-20 bg-gradient-to-b from-gray-50 to-white border-t border-gray-200">
+      <section id="resources-section" className="relative pt-20 pb-64 bg-gradient-to-b from-gray-50 to-white border-t border-gray-200">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="font-bold text-center mb-12 text-gray-900 leading-tight" style={{fontSize: '40px'}}>
             Learn more about AI & Content Protection
