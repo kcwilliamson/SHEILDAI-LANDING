@@ -8,6 +8,7 @@ export default function LandingPage() {
   const isColorfulRef = useRef(false);
   const { canvasRef, transformToColorful, transformToGrey, continueShapesInBackground, exitShapes } = useShapesAnimation();
   const [protectionLevel, setProtectionLevel] = useState(0);
+  const [showAllBlogs, setShowAllBlogs] = useState(false);
   const prevProtectionLevelRef = useRef(0);
 
   const protectionHeadingGradientClass = useMemo(() => {
@@ -64,6 +65,83 @@ export default function LandingPage() {
   );
 
   const visibleConfigs = protectionConfigs.slice(0, protectionLevel + 1);
+
+  const blogPosts = useMemo(() => [
+    { 
+      title: "Content Signals Policy", 
+      url: "https://blog.cloudflare.com/content-signals-policy/",
+      author: "Cloudflare Team",
+      blurb: "Learn how Cloudflare's Content Signals help creators control how their content is used by AI models."
+    },
+    { 
+      title: "Good AI Bots", 
+      url: "https://goodaibots.com/",
+      author: "Good AI Bots Team",
+      blurb: "A comprehensive directory and guide to identifying helpful AI crawlers versus harmful scrapers."
+    },
+    { 
+      title: "AI Insights from Cloudflare Radar", 
+      url: "https://radar.cloudflare.com/ai-insights",
+      author: "Cloudflare Radar",
+      blurb: "Explore real-time data and global trends on AI traffic, bot activity, and Internet usage patterns."
+    },
+    { 
+      title: "Perplexity Case Study", 
+      url: "https://blog.cloudflare.com/perplexity-is-using-stealth-undeclared-crawlers-to-evade-website-no-crawl-directives/",
+      author: "Security Team",
+      blurb: "An analysis of how undeclared crawlers attempt to bypass standard robot exclusion protocols to access content."
+    },
+    { 
+      title: "People Inc.'s commentary", 
+      url: "https://techcrunch.com/2025/11/04/people-inc-forges-ai-licensing-deal-with-microsoft-as-google-traffic-drops/",
+      author: "TechCrunch",
+      blurb: "Insights on the shifting landscape of search traffic, AI licensing deals, and the future of web monetization."
+    },
+    { 
+      title: "Content Independence Day", 
+      url: "https://blog.cloudflare.com/content-independence-day-no-ai-crawl-without-compensation/",
+      author: "Matthew Prince",
+      blurb: "Why creators deserve fair compensation and complete control over if and how their work trains AI models."
+    },
+    { 
+      title: "An AI Index for all our customers", 
+      url: "https://blog.cloudflare.com/an-ai-index-for-all-our-customers/",
+      author: "Product Team",
+      blurb: "Providing visibility into which AI bots are accessing your site, how often, and what they are doing."
+    },
+    { 
+      title: "Choice: the path to AI sovereignty", 
+      url: "https://blog.cloudflare.com/sovereign-ai-and-choice/",
+      author: "Sam Rhea",
+      blurb: "Empowering website owners to decide if and how their data is used for training, ensuring data sovereignty."
+    },
+    { 
+      title: "Building unique, per-customer defenses against advanced bot threats in the AI era", 
+      url: "https://blog.cloudflare.com/per-customer-bot-defenses/",
+      author: "Engineering Team",
+      blurb: "How tailored security measures protect against sophisticated, targeted AI scraping attacks."
+    },
+    { 
+      title: "Cloudflare Confidence Scorecards - making AI safer for the Internet", 
+      url: "https://blog.cloudflare.com/cloudflare-confidence-scorecards-making-ai-safer-for-the-internet/",
+      author: "Trust & Safety",
+      blurb: "A new standard for evaluating the safety, reliability, and transparency of AI agents on the web."
+    },
+    { 
+      title: "Helping protect journalists and local news from AI crawlers with Project Galileo", 
+      url: "https://blog.cloudflare.com/ai-crawl-control-for-project-galileo/",
+      author: "Impact Team",
+      blurb: "Project Galileo's initiative to safeguard news organizations from uncompensated scraping and data theft."
+    },
+    { 
+      title: "The crawl-to-click gap: Cloudflare data on AI bots, training, and referrals", 
+      url: "https://blog.cloudflare.com/crawlers-click-ai-bots-training/",
+      author: "Data Science Team",
+      blurb: "Analyzing the disparity between how much AI bots crawl content versus how much traffic they refer back to creators."
+    }
+  ], []);
+
+  const visibleBlogPosts = showAllBlogs ? blogPosts : blogPosts.slice(0, 6);
 
   
   useEffect(() => {
@@ -664,6 +742,56 @@ export default function LandingPage() {
                 Talk to Cloudflare about your policy
               </a>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 5: Blog/Resources */}
+      <section id="resources-section" className="relative py-20 bg-gray-50 border-t border-gray-200">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="font-bold text-center mb-12 text-gray-900 leading-tight" style={{fontSize: '40px'}}>
+            Learn more about AI & Content Protection
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {visibleBlogPosts.map((post, index) => (
+              <a 
+                key={index}
+                href={post.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 hover:border-orange-200 group h-full"
+              >
+                <div className="flex-1">
+                  <div className="flex items-start justify-between mb-4">
+                    <span className="text-xs font-bold text-orange-500 uppercase tracking-wide">
+                      {post.author}
+                    </span>
+                    <svg className="w-5 h-5 text-gray-300 group-hover:text-orange-500 transform group-hover:translate-x-1 transition-all flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </div>
+                  <h3 className="font-bold text-gray-900 text-lg mb-3 group-hover:text-orange-600 transition-colors leading-tight">
+                    {post.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                    {post.blurb}
+                  </p>
+                </div>
+              </a>
+            ))}
+          </div>
+
+          <div className="mt-12 text-center">
+            <button
+              onClick={() => setShowAllBlogs(!showAllBlogs)}
+              className="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+            >
+              {showAllBlogs ? 'Show Less' : 'Show More Resources'}
+              <svg className={`ml-2 -mr-1 h-4 w-4 transform transition-transform ${showAllBlogs ? 'rotate-180' : ''}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
           </div>
         </div>
       </section>
