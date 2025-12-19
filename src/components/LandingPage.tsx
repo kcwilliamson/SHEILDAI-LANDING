@@ -609,7 +609,7 @@ export default function LandingPage() {
       </div>
 
       {/* Section 4: Protect your content */}
-      <section id="section-4" className="relative py-20 bg-white">
+      <section id="section-4" className="relative py-20 bg-white mt-64">
         <div className="w-full">
           <div className="max-w-6xl mx-auto px-6">
             <h2 className="font-bold text-center mb-8 leading-tight" style={{fontSize: '40px'}}>
